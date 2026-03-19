@@ -38,7 +38,7 @@ export function LauncherNav() {
         </nav>
         <a
           href={siteContent.resumePath}
-          className="rounded-full border border-sky-300/20 bg-sky-400/10 px-4 py-2 text-sm text-sky-100 transition hover:border-sky-300/40 hover:bg-sky-400/15"
+          className="rounded-full border border-[#9ec8a8]/20 bg-[#7ca88b]/10 px-4 py-2 text-sm text-[#e6efe8] transition hover:border-[#9ec8a8]/40 hover:bg-[#7ca88b]/15"
         >
           Resume
         </a>

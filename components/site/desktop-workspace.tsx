@@ -28,23 +28,16 @@ type WindowState = {
   height: number;
 };
 type StageSize = { width: number; height: number };
-type ResizeState = {
-  id: WindowId;
-  startX: number;
-  startY: number;
-  startWidth: number;
-  startHeight: number;
-};
 
-const stagePadding = 16;
-const dockReserve = 92;
+const stagePadding = 18;
+const dockReserve = 112;
 const sideRailWidth = 272;
 
 const windowConfigs: Record<WindowId, WindowConfig> = {
   about: { id: "about", title: "About", shortLabel: "ABT", tone: "bg-white/8 text-white", defaultWidth: 760, defaultHeight: 580, minWidth: 560, minHeight: 360 },
-  projects: { id: "projects", title: "Projects", shortLabel: "PRJ", tone: "bg-sky-400/14 text-sky-100", defaultWidth: 720, defaultHeight: 540, minWidth: 520, minHeight: 340 },
-  resume: { id: "resume", title: "Resume", shortLabel: "PDF", tone: "bg-amber-300/14 text-amber-100", defaultWidth: 480, defaultHeight: 320, minWidth: 400, minHeight: 240 },
-  contact: { id: "contact", title: "Contact", shortLabel: "COM", tone: "bg-signal/14 text-signal", defaultWidth: 500, defaultHeight: 420, minWidth: 400, minHeight: 280 },
+  projects: { id: "projects", title: "Projects", shortLabel: "PRJ", tone: "bg-[#7ca88b]/16 text-[#dce9df]", defaultWidth: 720, defaultHeight: 540, minWidth: 520, minHeight: 340 },
+  resume: { id: "resume", title: "Resume", shortLabel: "PDF", tone: "bg-[#9ab4a1]/16 text-[#edf3ef]", defaultWidth: 470, defaultHeight: 300, minWidth: 400, minHeight: 240 },
+  contact: { id: "contact", title: "Contact", shortLabel: "COM", tone: "bg-[#8aa592]/16 text-[#e3ede6]", defaultWidth: 500, defaultHeight: 420, minWidth: 400, minHeight: 280 },
   now: { id: "now", title: "Now", shortLabel: "NOW", tone: "bg-white/8 text-white", defaultWidth: 560, defaultHeight: 460, minWidth: 420, minHeight: 300 },
 };
 
@@ -66,7 +59,6 @@ export function DesktopWorkspace() {
   const [stageSize, setStageSize] = React.useState<StageSize>({ width: 0, height: 0 });
   const [windows, setWindows] = React.useState<Record<WindowId, WindowState>>(baseWindows);
   const [mobileActive, setMobileActive] = React.useState<WindowId>("about");
-  const [resizeState, setResizeState] = React.useState<ResizeState | null>(null);
   const visibleDesktopWindows = windowOrder.filter((id) => windows[id].isOpen && !windows[id].isMinimized);
 
   React.useEffect(() => {
@@ -119,48 +111,15 @@ export function DesktopWorkspace() {
     setWindows((current) => ({ ...current, [id]: clampWindow({ ...current[id], x: nextX, y: nextY }, windowConfigs[id], stageSize) }));
   }, [stageSize]);
 
-  const resizeWindow = React.useCallback((id: WindowId, nextWidth: number, nextHeight: number) => {
-    setWindows((current) => {
-      const config = windowConfigs[id];
-      const maxWidth = Math.max(config.minWidth, stageSize.width - current[id].x - stagePadding);
-      const maxHeight = Math.max(config.minHeight, stageSize.height - current[id].y - dockReserve);
-      const resized = clampWindow(
-        { ...current[id], width: clamp(nextWidth, config.minWidth, maxWidth), height: clamp(nextHeight, config.minHeight, maxHeight) },
-        config,
-        stageSize
-      );
-      return { ...current, [id]: resized };
-    });
-  }, [stageSize]);
-
-  const beginResize = React.useCallback((id: WindowId, event: React.PointerEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    bringToFront(id);
-    const current = windows[id];
-    setResizeState({ id, startX: event.clientX, startY: event.clientY, startWidth: current.width, startHeight: current.height });
-  }, [bringToFront, windows]);
-
-  React.useEffect(() => {
-    if (!resizeState) return;
-    const handlePointerMove = (event: PointerEvent) => {
-      const deltaX = event.clientX - resizeState.startX;
-      const deltaY = event.clientY - resizeState.startY;
-      resizeWindow(resizeState.id, resizeState.startWidth + deltaX, resizeState.startHeight + deltaY);
-    };
-    const handlePointerUp = () => setResizeState(null);
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
-    return () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
-    };
-  }, [resizeState, resizeWindow]);
-
   return (
     <section id="top" className="space-y-5 md:h-full">
       <div className="hidden md:block md:h-full">
-        <div className="overflow-hidden rounded-[34px] border border-white/10 bg-ink-950/70 shadow-panel backdrop-blur-xl md:h-full">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.995 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="overflow-hidden rounded-[34px] border border-white/10 bg-ink-950/70 shadow-panel backdrop-blur-xl md:h-full"
+        >
           <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
@@ -172,32 +131,53 @@ export function DesktopWorkspace() {
             </div>
             <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.24em] text-mist">
               <span>{siteContent.hero.name}</span>
-              <span className="rounded-full border border-signal/15 bg-signal/8 px-2.5 py-1 text-signal">Live</span>
+              <span className="rounded-full border border-[#8aa592]/20 bg-[#8aa592]/10 px-2.5 py-1 text-[#cfe0d3]">Live</span>
             </div>
           </div>
 
-          <div ref={stageRef} className="relative h-[calc(100vh-7.4rem)] min-h-[700px] overflow-hidden bg-[radial-gradient(circle_at_top,rgba(88,198,255,0.14),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(126,240,195,0.08),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))]">
-            <div className="absolute inset-0 bg-grid bg-[size:42px_42px] opacity-20" />
-            <div className="absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(4,7,11,0.45),transparent)]" />
+          <div
+            ref={stageRef}
+            className="relative h-[calc(100vh-6.1rem)] min-h-[760px] overflow-hidden bg-[radial-gradient(circle_at_16%_18%,rgba(136,165,146,0.16),transparent_20%),radial-gradient(circle_at_78%_18%,rgba(105,129,113,0.12),transparent_24%),radial-gradient(circle_at_50%_100%,rgba(24,40,31,0.42),transparent_44%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.006))]"
+          >
+            <motion.div
+              aria-hidden
+              initial={reduceMotion ? false : { opacity: 0.38, scale: 1.01 }}
+              animate={reduceMotion ? undefined : { opacity: [0.34, 0.46, 0.34], scale: [1, 1.012, 1] }}
+              transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(186,208,190,0.06),transparent_26%),radial-gradient(circle_at_28%_76%,rgba(134,162,143,0.06),transparent_22%)]"
+            />
+            <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(rgba(217,229,220,0.7)_0.6px,transparent_0.6px)] [background-size:30px_30px]" />
+            <div className="absolute inset-x-0 top-0 h-44 bg-[linear-gradient(180deg,rgba(4,7,11,0.56),transparent)]" />
 
             <div className="absolute left-6 top-6 z-10 w-[240px] space-y-4">
-              <div className="rounded-[28px] border border-white/10 bg-black/24 p-5 backdrop-blur-xl">
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut", delay: 0.08 }}
+                className="rounded-[28px] border border-white/10 bg-black/24 p-5 backdrop-blur-xl"
+              >
                 <Tag>{siteContent.hero.eyebrow}</Tag>
                 <p className="mt-5 font-mono text-xs uppercase tracking-[0.28em] text-signal">{siteContent.hero.name}</p>
                 <h1 className="mt-3 text-3xl font-semibold leading-tight text-white">From analytics and operations into software and AI systems.</h1>
                 <p className="mt-4 text-sm leading-7 text-mist">{siteContent.hero.subheadline}</p>
-              </div>
+              </motion.div>
 
               <div className="grid gap-3">
                 {windowOrder.map((id) => {
                   const config = windowConfigs[id];
                   const state = windows[id];
                   return (
-                    <button key={id} type="button" onClick={() => openWindow(id)} className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4 text-left transition hover:border-white/20 hover:bg-white/[0.06]">
+                    <motion.button
+                      key={id}
+                      type="button"
+                      onClick={() => openWindow(id)}
+                      whileHover={reduceMotion ? undefined : { y: -2, scale: 1.01 }}
+                      className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4 text-left transition hover:border-white/20 hover:bg-white/[0.06]"
+                    >
                       <span className={cn("inline-flex rounded-xl px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.22em]", config.tone)}>{config.shortLabel}</span>
                       <p className="mt-3 text-base font-medium text-white">{config.title}</p>
                       <p className="mt-1 text-xs uppercase tracking-[0.18em] text-mist">{!state.isOpen ? "Open window" : state.isMinimized ? "Restore window" : "Focus window"}</p>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
@@ -228,7 +208,6 @@ export function DesktopWorkspace() {
                     onClose={closeWindow}
                     onMinimize={minimizeWindow}
                     onDragComplete={setWindowPosition}
-                    onResizeStart={beginResize}
                   >
                     <WindowBody id={id} />
                   </DesktopWindow>
@@ -236,17 +215,30 @@ export function DesktopWorkspace() {
               })}
             </AnimatePresence>
 
-            <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4">
-              <div className="mx-auto flex max-w-fit items-center gap-2 rounded-[26px] border border-white/10 bg-black/40 px-3 py-3 shadow-panel backdrop-blur-xl">
+            <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-5">
+              <div className="mx-auto flex max-w-fit items-center gap-2 rounded-[26px] border border-white/10 bg-black/38 px-3 py-3 shadow-panel backdrop-blur-xl">
                 {windowOrder.map((id) => {
                   const config = windowConfigs[id];
                   const state = windows[id];
                   const isVisible = state.isOpen && !state.isMinimized;
                   return (
-                    <button key={id} type="button" onClick={() => openWindow(id)} className={cn("flex min-w-[92px] flex-col items-center rounded-[18px] border px-3 py-2 text-center transition", isVisible ? "border-sky-300/24 bg-sky-400/10 text-white" : state.isMinimized ? "border-white/12 bg-white/[0.06] text-white" : "border-transparent bg-transparent text-mist hover:border-white/10 hover:bg-white/[0.05]")}>
+                    <motion.button
+                      key={id}
+                      type="button"
+                      onClick={() => openWindow(id)}
+                      whileHover={reduceMotion ? undefined : { y: -4, scale: 1.03 }}
+                      className={cn(
+                        "flex min-w-[92px] flex-col items-center rounded-[18px] border px-3 py-2 text-center transition",
+                        isVisible
+                          ? "border-[#9ec8a8]/24 bg-[#7ca88b]/10 text-white shadow-[0_12px_30px_rgba(124,168,139,0.08)]"
+                          : state.isMinimized
+                            ? "border-white/12 bg-white/[0.06] text-white"
+                            : "border-transparent bg-transparent text-mist hover:border-white/10 hover:bg-white/[0.05]"
+                      )}
+                    >
                       <span className={cn("rounded-xl px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.22em]", config.tone)}>{config.shortLabel}</span>
                       <span className="mt-2 text-xs uppercase tracking-[0.16em]">{config.title}</span>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
@@ -261,7 +253,7 @@ export function DesktopWorkspace() {
               </div>
             ) : null}
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="md:hidden">
@@ -274,7 +266,7 @@ export function DesktopWorkspace() {
           </div>
           <div className="grid grid-cols-3 gap-2">
             {windowOrder.map((id) => (
-              <button key={id} type="button" onClick={() => setMobileActive(id)} className={cn("rounded-[18px] border px-3 py-3 text-center text-xs uppercase tracking-[0.18em] transition", mobileActive === id ? "border-sky-300/24 bg-sky-400/10 text-white" : "border-white/10 bg-white/[0.04] text-mist")}>
+              <button key={id} type="button" onClick={() => setMobileActive(id)} className={cn("rounded-[18px] border px-3 py-3 text-center text-xs uppercase tracking-[0.18em] transition", mobileActive === id ? "border-[#9ec8a8]/24 bg-[#7ca88b]/10 text-white" : "border-white/10 bg-white/[0.04] text-mist")}>
                 {windowConfigs[id].title}
               </button>
             ))}
@@ -294,7 +286,7 @@ export function DesktopWorkspace() {
   );
 }
 
-function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, children, onFocus, onClose, onMinimize, onDragComplete, onResizeStart }: { id: WindowId; title: string; state: WindowState; active: boolean; stageSize: StageSize; reduceMotion: boolean; children: React.ReactNode; onFocus: (id: WindowId) => void; onClose: (id: WindowId) => void; onMinimize: (id: WindowId) => void; onDragComplete: (id: WindowId, x: number, y: number) => void; onResizeStart: (id: WindowId, event: React.PointerEvent<HTMLButtonElement>) => void }) {
+function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, children, onFocus, onClose, onMinimize, onDragComplete }: { id: WindowId; title: string; state: WindowState; active: boolean; stageSize: StageSize; reduceMotion: boolean; children: React.ReactNode; onFocus: (id: WindowId) => void; onClose: (id: WindowId) => void; onMinimize: (id: WindowId) => void; onDragComplete: (id: WindowId, x: number, y: number) => void }) {
   const dragControls = useDragControls();
   const dragConstraints = React.useMemo(() => ({
     left: stagePadding - state.x,
@@ -309,24 +301,27 @@ function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, chil
       dragControls={dragControls}
       dragListener={false}
       dragMomentum={false}
-      dragElastic={0.03}
+      dragElastic={0.01}
+      dragTransition={{ bounceStiffness: 700, bounceDamping: 40, power: 0.08, timeConstant: 120 }}
       dragConstraints={dragConstraints}
       onMouseDown={() => onFocus(id)}
       onDragStart={() => onFocus(id)}
       onDragEnd={(_, info) => onDragComplete(id, state.x + info.offset.x, state.y + info.offset.y)}
-      initial={reduceMotion ? false : { opacity: 0, scale: 0.985, y: 20 }}
+      initial={reduceMotion ? false : { opacity: 0, scale: 0.985, y: state.y + 14, x: state.x }}
       animate={{ opacity: 1, scale: 1, y: state.y, x: state.x }}
-      exit={reduceMotion ? {} : { opacity: 0, scale: 0.985, y: state.y + 14 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      exit={reduceMotion ? {} : { opacity: 0, scale: 0.985, y: state.y + 10, x: state.x }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
       style={{ width: state.width, height: state.height, zIndex: state.z }}
-      className={cn("absolute left-0 top-0 overflow-hidden rounded-[28px] border bg-ink-950/92 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl", active ? "border-sky-300/22" : "border-white/10")}
+      className={cn(
+        "absolute left-0 top-0 overflow-hidden rounded-[28px] border bg-ink-950/92 shadow-[0_28px_72px_rgba(0,0,0,0.42)] backdrop-blur-2xl",
+        active
+          ? "border-[#9ec8a8]/22 shadow-[0_34px_88px_rgba(0,0,0,0.46),0_0_0_1px_rgba(158,200,168,0.08),0_0_40px_rgba(124,168,139,0.08)]"
+          : "border-white/10"
+      )}
     >
       <WindowFrame title={title} active={active} onFocus={() => onFocus(id)} onClose={() => onClose(id)} onMinimize={() => onMinimize(id)} onDragStart={(event) => dragControls.start(event)}>
         {children}
       </WindowFrame>
-      <button type="button" aria-label={`Resize ${title}`} onPointerDown={(event) => onResizeStart(id, event)} className="absolute bottom-2 right-2 h-5 w-5 cursor-se-resize rounded-sm border border-white/10 bg-white/[0.04]">
-        <span className="absolute bottom-1 right-1 h-2.5 w-2.5 border-b border-r border-mist/80" />
-      </button>
     </motion.section>
   );
 }
@@ -334,7 +329,7 @@ function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, chil
 function WindowFrame({ title, active, children, onFocus, onClose, onMinimize, onDragStart }: { title: string; active: boolean; children: React.ReactNode; onFocus: () => void; onClose: () => void; onMinimize: () => void; onDragStart: (event: React.PointerEvent<HTMLDivElement>) => void }) {
   return (
     <>
-      <div className={cn("flex cursor-grab items-center justify-between border-b px-4 py-3 active:cursor-grabbing", active ? "border-sky-300/18 bg-sky-400/[0.07]" : "border-white/8 bg-white/[0.03]")} onMouseDown={onFocus} onPointerDown={onDragStart}>
+      <div className={cn("flex cursor-grab items-center justify-between border-b px-4 py-3 active:cursor-grabbing", active ? "border-[#9ec8a8]/18 bg-[#7ca88b]/[0.07]" : "border-white/8 bg-white/[0.03]")} onMouseDown={onFocus} onPointerDown={onDragStart}>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <button type="button" aria-label={`Close ${title}`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onClose(); }} className="h-2.5 w-2.5 rounded-full bg-[#fe5f57]" />
@@ -343,7 +338,7 @@ function WindowFrame({ title, active, children, onFocus, onClose, onMinimize, on
           </div>
           <p className="font-mono text-xs uppercase tracking-[0.24em] text-white">{title}</p>
         </div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">drag / resize</p>
+        <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">drag</p>
       </div>
       <div className="h-[calc(100%-53px)] overflow-y-auto p-5">{children}</div>
     </>
@@ -380,7 +375,6 @@ function AboutWindow({ mobile = false }: { mobile?: boolean }) {
           ))}
         </div>
       </div>
-
       <div className={cn("grid gap-4", mobile ? "" : "xl:grid-cols-[1.05fr_0.95fr]")}>
         <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
           <p className="font-mono text-xs uppercase tracking-[0.24em] text-signal">Experience</p>
@@ -397,7 +391,6 @@ function AboutWindow({ mobile = false }: { mobile?: boolean }) {
             ))}
           </div>
         </div>
-
         <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
           <p className="font-mono text-xs uppercase tracking-[0.24em] text-signal">Capability map</p>
           <div className="mt-4 space-y-3">
@@ -428,7 +421,6 @@ function ProjectsWindow({ mobile = false }: { mobile?: boolean }) {
         </div>
         <p className="max-w-md text-sm leading-7 text-mist">Replace these placeholders with real screenshots and links later. The structure is already set up to read like shipped work, not course exercises.</p>
       </div>
-
       <div className={cn("grid gap-4", mobile ? "" : "xl:grid-cols-2")}>
         {siteContent.projects.map((project, index) => (
           <article key={project.title} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
@@ -519,11 +511,10 @@ function MetricCard({ label, value }: { label: string; value: string }) {
 
 function createInitialWindowLayout(stageSize: StageSize): Record<WindowId, WindowState> {
   const about = createWindowFromConfig("about", stageSize, 5, { centered: true });
-  const projects = createWindowFromConfig("projects", stageSize, 2, { x: Math.min(stageSize.width - 760, about.x + 170), y: Math.min(stageSize.height - 420, about.y + 54) });
-  const resume = createWindowFromConfig("resume", stageSize, 1, { x: Math.min(stageSize.width - 520, about.x + 240), y: Math.min(stageSize.height - 320, about.y + 92) });
-  const contact = createWindowFromConfig("contact", stageSize, 1, { x: Math.min(stageSize.width - 520, about.x + 300), y: Math.min(stageSize.height - 420, about.y + 150) });
-  const now = createWindowFromConfig("now", stageSize, 1, { x: Math.min(stageSize.width - 580, about.x + 330), y: Math.min(stageSize.height - 440, about.y + 40) });
-
+  const projects = createWindowFromConfig("projects", stageSize, 2, { x: Math.min(stageSize.width - 760, about.x + 180), y: Math.min(stageSize.height - 420, about.y + 62) });
+  const resume = createWindowFromConfig("resume", stageSize, 1, { x: Math.min(stageSize.width - 500, about.x + 260), y: Math.min(stageSize.height - 320, about.y + 100) });
+  const contact = createWindowFromConfig("contact", stageSize, 1, { x: Math.min(stageSize.width - 520, about.x + 310), y: Math.min(stageSize.height - 420, about.y + 152) });
+  const now = createWindowFromConfig("now", stageSize, 1, { x: Math.min(stageSize.width - 580, about.x + 340), y: Math.min(stageSize.height - 440, about.y + 38) });
   return {
     about: { ...about, isOpen: true, isMinimized: false, z: 5 },
     projects: { ...projects, isOpen: false, isMinimized: false, z: 2 },
@@ -540,8 +531,7 @@ function createWindowFromConfig(id: WindowId, stageSize: StageSize, z: number, o
   const width = clamp(config.defaultWidth, config.minWidth, maxWidth);
   const height = clamp(config.defaultHeight, config.minHeight, maxHeight);
   const centeredX = sideRailWidth + (stageSize.width - sideRailWidth - width) / 2;
-  const centeredY = Math.max(30, (stageSize.height - dockReserve - height) / 2);
-
+  const centeredY = Math.max(34, (stageSize.height - dockReserve - height) / 2);
   return clampWindow(
     { isOpen: false, isMinimized: false, x: options?.centered ? centeredX : options?.x ?? centeredX, y: options?.centered ? centeredY : options?.y ?? centeredY, z, width, height },
     config,
