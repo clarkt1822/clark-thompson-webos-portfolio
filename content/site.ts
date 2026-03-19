@@ -184,9 +184,9 @@ export const siteContent = {
   contact: {
     prompt: "Open to conversations around data, software, automation, and applied AI work.",
     links: [
-      { label: "LinkedIn", href: "https://www.linkedin.com/in/your-link" },
-      { label: "GitHub", href: "https://github.com/your-handle" },
-      { label: "Email", href: "mailto:clark@example.com" }
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/clark-thompson-2267a9239/" },
+      { label: "GitHub", href: "https://github.com/clarkt1822" },
+      { label: "Email", href: "mailto:clarkt1822@gmail.com" }
     ]
   },
   terminal: {
