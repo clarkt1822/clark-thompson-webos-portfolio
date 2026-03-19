@@ -4,13 +4,9 @@ import { motion } from "framer-motion";
 import { siteContent } from "@/content/site";
 
 const links = [
-  { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
+  { label: "Workspace", href: "#top" },
   { label: "Experience", href: "#experience" },
-  { label: "Skills", href: "#skills" },
-  { label: "Now", href: "#now" },
-  { label: "Contact", href: "#contact" }
+  { label: "Stack", href: "#skills" }
 ];
 
 export function LauncherNav() {
