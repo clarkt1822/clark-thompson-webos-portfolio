@@ -7,7 +7,7 @@ export const siteContent = {
     subheadline:
       "Background in analytics, reporting, workflow problem-solving, and business-facing technical work. Now pushing deeper into software engineering and AI systems by shipping useful tools in public.",
     focus: "RAG, workflow automation, backend fundamentals, productized internal tools",
-    status: "Shipping consistently",
+    status: "Always Learning",
     availability: "Open to data, software, automation, and AI-leaning roles",
     ctas: [
       { label: "Open Projects", href: "#projects", variant: "primary" as const },
