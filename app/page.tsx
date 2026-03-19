@@ -5,7 +5,7 @@ import { FooterNote } from "@/components/site/footer-note";
 export default function HomePage() {
   return (
     <AppShell>
-      <div className="space-y-5">
+      <div className="space-y-5 md:h-full">
         <DesktopWorkspace />
         <FooterNote />
       </div>

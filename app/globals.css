@@ -4,6 +4,23 @@
 
 :root {
   color-scheme: dark;
+  --bg-graphite: #0a0e0b;
+  --bg-deep: #121812;
+  --bg-ink: #1a221c;
+  --bg-moss: #395142;
+  --bg-matcha: #94b18d;
+  --bg-teal: #5f7a6c;
+  --surface-border: rgba(202, 222, 209, 0.12);
+  --surface-border-strong: rgba(170, 198, 178, 0.24);
+  --surface-fill: rgba(242, 247, 243, 0.036);
+  --surface-fill-strong: rgba(21, 29, 24, 0.72);
+  --surface-fill-soft: rgba(8, 12, 10, 0.28);
+  --surface-highlight: rgba(255, 255, 255, 0.08);
+  --text-primary: #eef3ed;
+  --text-muted: #b7c3ba;
+  --text-soft: rgba(238, 243, 237, 0.72);
+  --accent-soft: #7d9988;
+  --accent-bright: #abc0ae;
 }
 
 * {
@@ -18,11 +35,12 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 18% 0%, rgba(122, 156, 132, 0.18), transparent 24%),
-    radial-gradient(circle at 82% 14%, rgba(87, 115, 95, 0.14), transparent 20%),
-    radial-gradient(circle at 50% 100%, rgba(26, 40, 30, 0.34), transparent 42%),
-    linear-gradient(180deg, #04070b 0%, #081019 38%, #04070b 100%);
-  color: #eff7ff;
+    radial-gradient(ellipse 80% 36% at 50% -8%, rgba(186, 213, 174, 0.34), transparent 58%),
+    radial-gradient(ellipse 42% 28% at 12% 22%, rgba(105, 137, 115, 0.24), transparent 70%),
+    radial-gradient(ellipse 38% 24% at 88% 18%, rgba(126, 154, 132, 0.2), transparent 68%),
+    radial-gradient(ellipse 64% 34% at 50% 112%, rgba(50, 68, 56, 0.34), transparent 72%),
+    linear-gradient(180deg, #182019 0%, #1c241d 44%, #121812 100%);
+  color: var(--text-primary);
   font-family: var(--font-sans), sans-serif;
 }
 
@@ -32,11 +50,26 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 20% 20%, rgba(214, 228, 218, 0.05), transparent 18%),
-    radial-gradient(circle at 78% 24%, rgba(186, 206, 191, 0.03), transparent 16%),
-    radial-gradient(rgba(255, 255, 255, 0.024) 0.6px, transparent 0.6px);
-  background-size: auto, auto, 26px 26px;
-  opacity: 0.1;
+    linear-gradient(112deg, transparent 6%, rgba(197, 220, 190, 0.02) 22%, rgba(197, 220, 190, 0.085) 36%, rgba(160, 188, 167, 0.06) 48%, transparent 62%),
+    linear-gradient(110deg, transparent 20%, rgba(170, 199, 170, 0.03) 34%, rgba(170, 199, 170, 0.07) 46%, transparent 60%),
+    radial-gradient(ellipse 34% 18% at 50% 12%, rgba(228, 236, 224, 0.11), transparent 72%);
+  opacity: 0.48;
+  filter: blur(2px);
+  animation: riverSweep 24s linear infinite;
+  will-change: transform, opacity;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(168, 187, 174, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 187, 174, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at 50% 18%, black, transparent 88%);
+  opacity: 0.16;
 }
 
 a {
@@ -52,8 +85,8 @@ select {
 }
 
 ::selection {
-  background: rgba(88, 198, 255, 0.22);
-  color: #eff7ff;
+  background: rgba(124, 168, 139, 0.28);
+  color: var(--text-primary);
 }
 
 .panel-sheen {
@@ -66,14 +99,14 @@ select {
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 34%);
-  opacity: 0.55;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 22%, transparent 100%);
+  opacity: 0.62;
 }
 
 .scanline {
   background-image:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 12%),
-    linear-gradient(transparent 50%, rgba(88, 198, 255, 0.035) 51%, transparent 52%);
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0) 12%),
+    linear-gradient(transparent 50%, rgba(129, 161, 143, 0.03) 51%, transparent 52%);
   background-size: 100% 100%, 100% 5px;
 }
 
@@ -81,8 +114,320 @@ select {
   mask-image: linear-gradient(to bottom, black 84%, transparent 100%);
 }
 
+.zen-shell-bg {
+  position: absolute;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 78% 32% at 50% -4%, rgba(164, 193, 152, 0.28), transparent 60%),
+    radial-gradient(ellipse 34% 22% at 12% 22%, rgba(97, 126, 107, 0.2), transparent 70%),
+    radial-gradient(ellipse 32% 20% at 86% 18%, rgba(118, 145, 125, 0.18), transparent 68%),
+    linear-gradient(180deg, rgba(25, 33, 27, 0.96), rgba(28, 37, 30, 0.98));
+}
+
+.zen-shell-bg::before,
+.zen-shell-bg::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  filter: blur(88px);
+  will-change: transform, opacity;
+}
+
+.zen-shell-bg::before {
+  background:
+    linear-gradient(108deg, transparent 10%, rgba(168, 198, 156, 0.04) 22%, rgba(168, 198, 156, 0.16) 34%, rgba(135, 167, 142, 0.12) 46%, transparent 62%),
+    linear-gradient(108deg, transparent 36%, rgba(199, 219, 193, 0.07) 46%, rgba(199, 219, 193, 0.12) 52%, transparent 62%);
+  opacity: 0.82;
+  transform: translate3d(-8%, -3%, 0) scale(1.12);
+  animation: ambientRiver 22s linear infinite;
+}
+
+.zen-shell-bg::after {
+  background:
+    linear-gradient(118deg, transparent 18%, rgba(117, 149, 128, 0.03) 30%, rgba(117, 149, 128, 0.12) 42%, rgba(95, 125, 108, 0.09) 52%, transparent 68%),
+    linear-gradient(118deg, transparent 48%, rgba(169, 196, 171, 0.05) 56%, rgba(169, 196, 171, 0.1) 62%, transparent 72%);
+  opacity: 0.68;
+  transform: translate3d(6%, 4%, 0) scale(1.08);
+  animation: ambientRiverSlow 31s linear infinite;
+}
+
+.zen-workspace-bg {
+  background:
+    radial-gradient(circle at 50% 2%, rgba(153, 185, 145, 0.22), transparent 28%),
+    radial-gradient(circle at 16% 18%, rgba(83, 112, 94, 0.18), transparent 24%),
+    radial-gradient(circle at 86% 14%, rgba(96, 126, 108, 0.16), transparent 22%),
+    radial-gradient(circle at 54% 112%, rgba(22, 31, 26, 0.46), transparent 56%),
+    linear-gradient(180deg, #151d17 0%, #0f1511 56%, #0b0f0d 100%);
+}
+
+.zen-workspace-atmosphere {
+  background:
+    radial-gradient(circle at 50% 16%, rgba(219, 231, 215, 0.12), transparent 20%),
+    radial-gradient(circle at 18% 70%, rgba(135, 167, 144, 0.1), transparent 24%),
+    radial-gradient(circle at 80% 68%, rgba(105, 136, 117, 0.085), transparent 22%);
+}
+
+.zen-ambient-glow {
+  background:
+    radial-gradient(circle at 50% 6%, rgba(159, 193, 149, 0.18), transparent 26%),
+    radial-gradient(circle at 82% 18%, rgba(123, 156, 131, 0.12), transparent 22%),
+    radial-gradient(circle at 18% 84%, rgba(78, 103, 87, 0.08), transparent 24%);
+  mix-blend-mode: screen;
+  opacity: 0.42;
+  transform: scale(1.08);
+}
+
+.zen-ambient-drift {
+  animation: ambientDrift 34s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+.zen-ambient-drift-slow {
+  animation: ambientFloat 46s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+.zen-surface {
+  background: linear-gradient(180deg, rgba(25, 33, 27, 0.82), rgba(15, 21, 17, 0.72));
+  border: 1px solid var(--surface-border);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.28),
+    0 0 22px rgba(138, 168, 145, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075);
+  backdrop-filter: blur(18px) saturate(108%);
+}
+
+.zen-surface-soft {
+  background: linear-gradient(180deg, rgba(245, 248, 245, 0.065), rgba(255, 255, 255, 0.036));
+  border: 1px solid rgba(202, 222, 209, 0.1);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    0 0 18px rgba(136, 164, 141, 0.028),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065);
+  backdrop-filter: blur(14px) saturate(106%);
+}
+
+.zen-shell-panel {
+  background: linear-gradient(180deg, rgba(18, 25, 20, 0.9), rgba(11, 16, 13, 0.86));
+  border: 1px solid rgba(220, 232, 223, 0.11);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.028),
+    0 28px 90px rgba(0, 0, 0, 0.36),
+    0 0 34px rgba(136, 164, 141, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(22px) saturate(110%);
+}
+
+.zen-shell-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 20%, transparent 100%),
+    linear-gradient(120deg, rgba(188, 207, 192, 0.025), transparent 28%, transparent 100%);
+  opacity: 0.92;
+}
+
+.zen-shell-bar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.zen-window {
+  background: linear-gradient(180deg, rgba(20, 27, 22, 0.92), rgba(11, 16, 13, 0.89));
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.42),
+    0 0 24px rgba(124, 153, 132, 0.035);
+  backdrop-filter: blur(20px) saturate(112%);
+}
+
+.zen-window-active {
+  border-color: var(--surface-border-strong);
+  box-shadow:
+    0 38px 96px rgba(0, 0, 0, 0.52),
+    0 0 32px rgba(122, 153, 132, 0.08),
+    0 0 0 1px rgba(224, 236, 227, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.zen-window-idle {
+  border-color: rgba(202, 222, 209, 0.1);
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(255, 255, 255, 0.018),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.zen-window-bar-active {
+  border-color: rgba(170, 198, 178, 0.18);
+  background: linear-gradient(180deg, rgba(136, 164, 141, 0.18), rgba(136, 164, 141, 0.07));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.085),
+    0 1px 0 rgba(124, 150, 131, 0.07);
+}
+
+.zen-window-bar-idle {
+  border-color: rgba(202, 222, 209, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018));
+}
+
+.zen-dock {
+  background: linear-gradient(180deg, rgba(20, 27, 22, 0.82), rgba(12, 17, 14, 0.7));
+  border: 1px solid rgba(202, 222, 209, 0.12);
+  box-shadow:
+    0 20px 52px rgba(0, 0, 0, 0.4),
+    0 0 26px rgba(115, 145, 126, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.zen-dock-active {
+  border-color: rgba(170, 198, 178, 0.24);
+  background: linear-gradient(180deg, rgba(126, 152, 132, 0.18), rgba(126, 152, 132, 0.08));
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.22),
+    0 0 22px rgba(112, 137, 119, 0.07);
+}
+
+.text-muted-soft {
+  color: var(--text-soft);
+}
+
+@keyframes ambientDrift {
+  0% {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.04);
+    opacity: 0.34;
+  }
+  50% {
+    transform: translate3d(1%, 1.25%, 0) scale(1.08);
+    opacity: 0.48;
+  }
+  100% {
+    transform: translate3d(2%, -0.5%, 0) scale(1.05);
+    opacity: 0.38;
+  }
+}
+
+@keyframes ambientFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.06);
+    opacity: 0.34;
+  }
+  50% {
+    transform: translate3d(-1.2%, 1.5%, 0) scale(1.1);
+    opacity: 0.42;
+  }
+  100% {
+    transform: translate3d(1.4%, -1%, 0) scale(1.07);
+    opacity: 0.36;
+  }
+}
+
+@keyframes shellMist {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.01);
+    opacity: 0.32;
+  }
+  50% {
+    transform: translate3d(1.2%, -1%, 0) scale(1.035);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate3d(-0.8%, 1.1%, 0) scale(1.02);
+    opacity: 0.34;
+  }
+}
+
+@keyframes ambientBloom {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1.02);
+    opacity: 0.56;
+  }
+  50% {
+    transform: translate3d(1%, 1.5%, 0) scale(1.08);
+    opacity: 0.72;
+  }
+  100% {
+    transform: translate3d(2.4%, -0.6%, 0) scale(1.04);
+    opacity: 0.6;
+  }
+}
+
+@keyframes ambientBloomReverse {
+  0% {
+    transform: translate3d(1.5%, 1%, 0) scale(1.04);
+    opacity: 0.48;
+  }
+  50% {
+    transform: translate3d(-1.8%, -1.2%, 0) scale(1.1);
+    opacity: 0.62;
+  }
+  100% {
+    transform: translate3d(-0.6%, 1.6%, 0) scale(1.05);
+    opacity: 0.52;
+  }
+}
+
+@keyframes riverSweep {
+  0% {
+    transform: translate3d(-3%, -1.5%, 0) scale(1.02);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate3d(2%, 1%, 0) scale(1.05);
+    opacity: 0.52;
+  }
+  100% {
+    transform: translate3d(5%, 2%, 0) scale(1.03);
+    opacity: 0.44;
+  }
+}
+
+@keyframes ambientRiver {
+  0% {
+    transform: translate3d(-10%, -4%, 0) scale(1.12);
+    opacity: 0.74;
+  }
+  50% {
+    transform: translate3d(-1%, 0.5%, 0) scale(1.16);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(8%, 4%, 0) scale(1.13);
+    opacity: 0.78;
+  }
+}
+
+@keyframes ambientRiverSlow {
+  0% {
+    transform: translate3d(8%, 5%, 0) scale(1.08);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate3d(1%, 1%, 0) scale(1.12);
+    opacity: 0.74;
+  }
+  100% {
+    transform: translate3d(-7%, -3%, 0) scale(1.09);
+    opacity: 0.64;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  body::before,
+  .zen-shell-bg::before,
+  .zen-shell-bg::after,
+  .zen-ambient-drift,
+  .zen-ambient-drift-slow {
+    animation: none;
   }
 }

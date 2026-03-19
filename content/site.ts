@@ -2,7 +2,7 @@ export const siteContent = {
   resumePath: "/resume/clark-thompson-resume.pdf",
   hero: {
     name: "Clark Thompson",
-    eyebrow: "Personal Operating System / Builder Workspace",
+    eyebrow: "System Profile",
     headline: "Building practical systems across data, software, automation, and applied AI.",
     subheadline:
       "Background in analytics, reporting, workflow problem-solving, and business-facing technical work. Now pushing deeper into software engineering and AI systems by shipping useful tools in public.",

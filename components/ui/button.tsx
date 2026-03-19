@@ -10,11 +10,11 @@ type ButtonProps = {
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
-    "border border-sky-300/20 bg-sky-400/10 text-sky-100 shadow-glow hover:border-sky-300/40 hover:bg-sky-400/15",
+    "border border-[#a7bead]/22 bg-[#7f9a88]/12 text-[#ebf2ec] shadow-glow hover:border-[#a7bead]/38 hover:bg-[#7f9a88]/18",
   secondary:
-    "border border-white/10 bg-white/5 text-white hover:border-white/20 hover:bg-white/8",
+    "border border-white/10 bg-white/[0.045] text-white hover:border-white/16 hover:bg-white/[0.07]",
   ghost:
-    "border border-transparent bg-transparent text-mist hover:border-white/10 hover:bg-white/5 hover:text-white"
+    "border border-transparent bg-transparent text-mist hover:border-white/10 hover:bg-white/[0.05] hover:text-white"
 };
 
 export function Button({

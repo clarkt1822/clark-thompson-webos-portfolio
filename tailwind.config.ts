@@ -11,25 +11,25 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          950: "#04070b",
-          900: "#081019",
-          800: "#101b28",
-          700: "#162332"
+          950: "#060907",
+          900: "#0b120e",
+          800: "#121a16",
+          700: "#1a2520"
         },
-        line: "#213246",
-        mist: "#9fb4c9",
-        glow: "#58c6ff",
-        signal: "#7ef0c3",
+        line: "#28352e",
+        mist: "#b2beb6",
+        glow: "#8ea996",
+        signal: "#abc0ae",
         ember: "#f6ae67"
       },
       boxShadow: {
         panel:
-          "0 0 0 1px rgba(161, 193, 228, 0.08), 0 14px 50px rgba(3, 9, 17, 0.5), inset 0 1px 0 rgba(255,255,255,0.03)",
-        glow: "0 0 0 1px rgba(88,198,255,0.12), 0 0 32px rgba(88,198,255,0.16)"
+          "0 0 0 1px rgba(196, 216, 202, 0.08), 0 14px 50px rgba(3, 9, 6, 0.44), inset 0 1px 0 rgba(255,255,255,0.03)",
+        glow: "0 0 0 1px rgba(142,169,150,0.12), 0 0 32px rgba(142,169,150,0.12)"
       },
       backgroundImage: {
         grid:
-          "linear-gradient(rgba(120, 153, 186, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(120, 153, 186, 0.06) 1px, transparent 1px)"
+          "linear-gradient(rgba(155, 177, 163, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(155, 177, 163, 0.05) 1px, transparent 1px)"
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
