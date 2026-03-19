@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion, useDragControls, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tag } from "@/components/ui/tag";
 import { siteContent } from "@/content/site";
@@ -32,7 +32,10 @@ type StageSize = { width: number; height: number };
 const stagePadding = 18;
 const dockReserve = 112;
 const sideRailWidth = 272;
+const infoRailWidth = 240;
 const chromeLayerZ = 20;
+const baseWindowZ = 30;
+const dockLayerZ = 50;
 
 const windowConfigs: Record<WindowId, WindowConfig> = {
   about: { id: "about", title: "About", shortLabel: "ABT", tone: "bg-white/8 text-white", defaultWidth: 760, defaultHeight: 580, minWidth: 560, minHeight: 360 },
@@ -43,24 +46,36 @@ const windowConfigs: Record<WindowId, WindowConfig> = {
 };
 
 const windowOrder: WindowId[] = ["about", "projects", "resume", "contact", "now"];
-const hiddenWindowBase = { isOpen: false, isMinimized: false, x: 0, y: 0, z: 1, width: 0, height: 0 };
+const hiddenWindowBase = { isOpen: false, isMinimized: false, x: 0, y: 0, z: baseWindowZ, width: 0, height: 0 };
 const baseWindows: Record<WindowId, WindowState> = {
-  about: { ...hiddenWindowBase, isOpen: true, z: 5 },
+  about: { ...hiddenWindowBase, isOpen: true, z: baseWindowZ + 5 },
   projects: { ...hiddenWindowBase },
   resume: { ...hiddenWindowBase },
   contact: { ...hiddenWindowBase },
   now: { ...hiddenWindowBase },
 };
+const initialWindowOffsets: Record<WindowId, { x: number; y: number }> = {
+  about: { x: 0, y: 0 },
+  projects: { x: 48, y: 28 },
+  resume: { x: 92, y: -24 },
+  contact: { x: 72, y: 52 },
+  now: { x: 116, y: 12 },
+};
 
 export function DesktopWorkspace() {
   const reduceMotion = !!useReducedMotion();
   const stageRef = React.useRef<HTMLDivElement>(null);
-  const topZ = React.useRef(5);
+  const topZ = React.useRef(baseWindowZ + 5);
   const initializedRef = React.useRef(false);
   const [stageSize, setStageSize] = React.useState<StageSize>({ width: 0, height: 0 });
   const [windows, setWindows] = React.useState<Record<WindowId, WindowState>>(baseWindows);
   const [mobileActive, setMobileActive] = React.useState<WindowId>("about");
   const visibleDesktopWindows = windowOrder.filter((id) => windows[id].isOpen && !windows[id].isMinimized);
+  const activeWindowId =
+    visibleDesktopWindows.reduce<WindowId | null>((currentActive, id) => {
+      if (!currentActive) return id;
+      return windows[id].z > windows[currentActive].z ? id : currentActive;
+    }, null) ?? "about";
   
 
   React.useEffect(() => {
@@ -120,7 +135,7 @@ export function DesktopWorkspace() {
           initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.995 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="overflow-hidden rounded-[34px] border border-white/10 bg-ink-950/70 shadow-panel backdrop-blur-xl md:h-full"
+          className="flex h-full min-h-0 flex-col overflow-hidden rounded-[34px] border border-white/10 bg-ink-950/70 shadow-panel backdrop-blur-xl"
         >
           <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
             <div className="flex items-center gap-3">
@@ -168,12 +183,12 @@ export function DesktopWorkspace() {
             </div>
 
             <div className="absolute right-6 top-6 z-10 w-[240px] space-y-3" style={{ zIndex: chromeLayerZ }}>
-              <MetricCard label="Current focus" value={activeWindowTitle} />
+              <MetricCard label="Current focus" value={windowConfigs[activeWindowId].title} />
               <MetricCard label="Status" value={siteContent.hero.status} />
               <MetricCard label="Availability" value={siteContent.hero.availability} />
             </div>
 
-            {hasMounted ? (
+          
               <AnimatePresence>
                 {windowOrder.map((id) => {
                   const state = windows[id];
@@ -199,7 +214,7 @@ export function DesktopWorkspace() {
                   );
                 })}
               </AnimatePresence>
-            ) : null}
+           
 
             <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-5" style={{ zIndex: dockLayerZ }}>
               <div className="mx-auto flex max-w-fit items-center gap-2 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(14,20,16,0.78),rgba(8,12,10,0.6))] px-3 py-3 shadow-[0_18px_48px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl">
@@ -230,7 +245,7 @@ export function DesktopWorkspace() {
               </div>
             </div>
 
-            {hasMounted && visibleDesktopWindows.length === 0 ? (
+            {stageSize.width > 0 && visibleDesktopWindows.length === 0 ? (
               <div className="absolute inset-0 z-0 flex items-center justify-center px-8">
                 <div className="rounded-[28px] border border-white/10 bg-black/20 p-8 text-center backdrop-blur-xl">
                   <p className="font-mono text-xs uppercase tracking-[0.28em] text-mist">Workspace idle</p>
@@ -549,13 +564,13 @@ function MetricCard({ label, value }: { label: string; value: string }) {
 }
 
 function createInitialWindowLayout(stageSize: StageSize): Record<WindowId, WindowState> {
-  const about = createOpenWindowState("about", stageSize, baseWindowZ + 5, { centered: true });
-  const projects = createWindowFromConfig("projects", stageSize, baseWindowZ + 2, { x: Math.min(stageSize.width - 760, about.x + 180), y: Math.min(stageSize.height - 420, about.y + 62) });
-  const resume = createWindowFromConfig("resume", stageSize, baseWindowZ + 1, { x: Math.min(stageSize.width - 500, about.x + 260), y: Math.min(stageSize.height - 320, about.y + 100) });
-  const contact = createWindowFromConfig("contact", stageSize, baseWindowZ + 1, { x: Math.min(stageSize.width - 520, about.x + 310), y: Math.min(stageSize.height - 420, about.y + 152) });
-  const now = createWindowFromConfig("now", stageSize, baseWindowZ + 1, { x: Math.min(stageSize.width - 580, about.x + 340), y: Math.min(stageSize.height - 440, about.y + 38) });
+  const about = createWindowFromConfig("about", stageSize, baseWindowZ + 5, { centered: true });
+  const projects = createWindowFromConfig("projects", stageSize, baseWindowZ + 2, initialWindowOffsets.projects);
+  const resume = createWindowFromConfig("resume", stageSize, baseWindowZ + 1, initialWindowOffsets.resume);
+  const contact = createWindowFromConfig("contact", stageSize, baseWindowZ + 1, initialWindowOffsets.contact);
+  const now = createWindowFromConfig("now", stageSize, baseWindowZ + 1, initialWindowOffsets.now);
   return {
-    about,
+    about: { ...about, isOpen: true, isMinimized: false, z: baseWindowZ + 5 },
     projects: { ...projects, isOpen: false, isMinimized: false, z: baseWindowZ + 2 },
     resume: { ...resume, isOpen: false, isMinimized: false, z: baseWindowZ + 1 },
     contact: { ...contact, isOpen: false, isMinimized: false, z: baseWindowZ + 1 },
@@ -569,15 +584,23 @@ function createOpenWindowState(id: WindowId, stageSize: StageSize, z: number, op
 
 function createWindowFromConfig(id: WindowId, stageSize: StageSize, z: number, options?: { x?: number; y?: number; centered?: boolean }): WindowState {
   const config = windowConfigs[id];
-  const usableWidth = stageSize.width - sideRailWidth - infoRailWidth;
-  const maxWidth = Math.max(config.minWidth, usableWidth - stagePadding * 2);
-  const maxHeight = Math.max(config.minHeight, stageSize.height - dockReserve - stagePadding * 2);
+  const maxWidth = Math.max(config.minWidth, stageSize.width - stagePadding * 2);
+  const maxHeight = Math.max(config.minHeight, stageSize.height - dockReserve - stagePadding);
   const width = clamp(config.defaultWidth, config.minWidth, maxWidth);
   const height = clamp(config.defaultHeight, config.minHeight, maxHeight);
-  const centeredX = sideRailWidth + (usableWidth - width) / 2;
-  const centeredY = Math.max(34, (stageSize.height - dockReserve - height) / 2);
+  const positionBounds = getInitialWindowBounds(width, height, stageSize);
+  const centeredX = positionBounds.minX + (positionBounds.maxX - positionBounds.minX) / 2;
+  const centeredY = positionBounds.minY + (positionBounds.maxY - positionBounds.minY) / 2;
   return clampWindow(
-    { isOpen: false, isMinimized: false, x: options?.centered ? centeredX : options?.x ?? centeredX, y: options?.centered ? centeredY : options?.y ?? centeredY, z, width, height },
+    {
+      isOpen: false,
+      isMinimized: false,
+      x: options?.centered ? centeredX : centeredX + (options?.x ?? initialWindowOffsets[id].x),
+      y: options?.centered ? centeredY : centeredY + (options?.y ?? initialWindowOffsets[id].y),
+      z,
+      width,
+      height,
+    },
     config,
     stageSize
   );
@@ -604,11 +627,28 @@ function clampWindow(windowState: WindowState, config: WindowConfig, stageSize: 
 }
 
 function getWindowBounds(width: number, height: number, stageSize: StageSize) {
+  const minX = stagePadding;
+  const maxX = Math.max(minX, stageSize.width - width - stagePadding);
+  const minY = stagePadding;
+  const maxY = Math.max(minY, stageSize.height - height - dockReserve);
   return {
-    minX: stagePadding,
-    minY: stagePadding,
-    maxX: Math.max(stagePadding, stageSize.width - width - stagePadding),
-    maxY: Math.max(stagePadding, stageSize.height - height - dockReserve),
+    minX,
+    minY,
+    maxX,
+    maxY,
+  };
+}
+
+function getInitialWindowBounds(width: number, height: number, stageSize: StageSize) {
+  const minX = sideRailWidth + stagePadding;
+  const maxX = Math.max(minX, stageSize.width - infoRailWidth - width - stagePadding);
+  const minY = stagePadding;
+  const maxY = Math.max(minY, stageSize.height - height - dockReserve);
+  return {
+    minX,
+    minY,
+    maxX,
+    maxY,
   };
 }
 
