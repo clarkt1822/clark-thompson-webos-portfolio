@@ -4,9 +4,7 @@ import { motion } from "framer-motion";
 import { siteContent } from "@/content/site";
 
 const links = [
-  { label: "Workspace", href: "#top" },
-  { label: "Experience", href: "#experience" },
-  { label: "Stack", href: "#skills" }
+  { label: "Desktop", href: "#top" }
 ];
 
 export function LauncherNav() {
@@ -34,6 +32,9 @@ export function LauncherNav() {
               {link.label}
             </a>
           ))}
+          <span className="rounded-full px-3 py-2 text-sm text-mist">
+            Windowed Portfolio
+          </span>
         </nav>
         <a
           href={siteContent.resumePath}
