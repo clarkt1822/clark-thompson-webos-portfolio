@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion, useMotionValue, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useDragControls, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tag } from "@/components/ui/tag";
 import { siteContent } from "@/content/site";
@@ -29,27 +29,23 @@ type WindowState = {
 };
 type StageSize = { width: number; height: number };
 
-const stagePadding = 20;
-const dockReserve = 120;
+const stagePadding = 18;
+const dockReserve = 112;
 const sideRailWidth = 272;
-const infoRailWidth = 272;
-const chromeLayerZ = 10;
-const dockLayerZ = 20;
-const baseWindowZ = 40;
-const defaultStageSize: StageSize = { width: 1280, height: 720 };
+const chromeLayerZ = 20;
 
 const windowConfigs: Record<WindowId, WindowConfig> = {
-  about: { id: "about", title: "About", shortLabel: "ABT", tone: "bg-white/[0.08] text-white", defaultWidth: 740, defaultHeight: 500, minWidth: 560, minHeight: 360 },
-  projects: { id: "projects", title: "Projects", shortLabel: "PRJ", tone: "bg-[#7d9988]/16 text-[#e0e9e3]", defaultWidth: 720, defaultHeight: 460, minWidth: 520, minHeight: 340 },
-  resume: { id: "resume", title: "Resume", shortLabel: "PDF", tone: "bg-[#97ae9a]/16 text-[#edf2ee]", defaultWidth: 470, defaultHeight: 300, minWidth: 400, minHeight: 240 },
-  contact: { id: "contact", title: "Contact", shortLabel: "COM", tone: "bg-[#8ca291]/16 text-[#e4ece6]", defaultWidth: 500, defaultHeight: 360, minWidth: 400, minHeight: 280 },
-  now: { id: "now", title: "Now", shortLabel: "NOW", tone: "bg-white/[0.08] text-white", defaultWidth: 560, defaultHeight: 390, minWidth: 420, minHeight: 300 },
+  about: { id: "about", title: "About", shortLabel: "ABT", tone: "bg-white/8 text-white", defaultWidth: 760, defaultHeight: 580, minWidth: 560, minHeight: 360 },
+  projects: { id: "projects", title: "Projects", shortLabel: "PRJ", tone: "bg-[#7ca88b]/16 text-[#dce9df]", defaultWidth: 720, defaultHeight: 540, minWidth: 520, minHeight: 340 },
+  resume: { id: "resume", title: "Resume", shortLabel: "PDF", tone: "bg-[#9ab4a1]/16 text-[#edf3ef]", defaultWidth: 470, defaultHeight: 300, minWidth: 400, minHeight: 240 },
+  contact: { id: "contact", title: "Contact", shortLabel: "COM", tone: "bg-[#8aa592]/16 text-[#e3ede6]", defaultWidth: 500, defaultHeight: 420, minWidth: 400, minHeight: 280 },
+  now: { id: "now", title: "Now", shortLabel: "NOW", tone: "bg-white/8 text-white", defaultWidth: 560, defaultHeight: 460, minWidth: 420, minHeight: 300 },
 };
 
 const windowOrder: WindowId[] = ["about", "projects", "resume", "contact", "now"];
 const hiddenWindowBase = { isOpen: false, isMinimized: false, x: 0, y: 0, z: 1, width: 0, height: 0 };
 const baseWindows: Record<WindowId, WindowState> = {
-  about: { ...hiddenWindowBase },
+  about: { ...hiddenWindowBase, isOpen: true, z: 5 },
   projects: { ...hiddenWindowBase },
   resume: { ...hiddenWindowBase },
   contact: { ...hiddenWindowBase },
@@ -59,27 +55,13 @@ const baseWindows: Record<WindowId, WindowState> = {
 export function DesktopWorkspace() {
   const reduceMotion = !!useReducedMotion();
   const stageRef = React.useRef<HTMLDivElement>(null);
-  const topZ = React.useRef(baseWindowZ + 5);
+  const topZ = React.useRef(5);
   const initializedRef = React.useRef(false);
-  const [hasMounted, setHasMounted] = React.useState(false);
-  const [stageSize, setStageSize] = React.useState<StageSize>(defaultStageSize);
-  const [windows, setWindows] = React.useState<Record<WindowId, WindowState>>(() => createInitialWindowLayout(defaultStageSize));
+  const [stageSize, setStageSize] = React.useState<StageSize>({ width: 0, height: 0 });
+  const [windows, setWindows] = React.useState<Record<WindowId, WindowState>>(baseWindows);
   const [mobileActive, setMobileActive] = React.useState<WindowId>("about");
-  const openDesktopWindows = windowOrder.filter((id) => windows[id].isOpen);
-  const visibleDesktopWindows = openDesktopWindows.filter((id) => !windows[id].isMinimized);
-  const activeWindowId = React.useMemo(() => {
-    const activeWindow = openDesktopWindows.reduce<{ id: WindowId; z: number } | null>((current, id) => {
-      const next = windows[id];
-      if (!current || next.z > current.z) return { id, z: next.z };
-      return current;
-    }, null);
-    return activeWindow?.id ?? null;
-  }, [openDesktopWindows, windows]);
-  const activeWindowTitle = activeWindowId ? windowConfigs[activeWindowId].title : "No active window";
-
-  React.useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  const visibleDesktopWindows = windowOrder.filter((id) => windows[id].isOpen && !windows[id].isMinimized);
+  
 
   React.useEffect(() => {
     const element = stageRef.current;
@@ -96,7 +78,7 @@ export function DesktopWorkspace() {
     setWindows((current) => {
       if (!initializedRef.current) {
         initializedRef.current = true;
-        return current.about.isOpen ? clampAllWindows(current, stageSize) : createInitialWindowLayout(stageSize);
+        return createInitialWindowLayout(stageSize);
       }
       return clampAllWindows(current, stageSize);
     });
@@ -132,15 +114,15 @@ export function DesktopWorkspace() {
   }, [stageSize]);
 
   return (
-    <section id="top" className="space-y-5 md:h-full md:min-h-0">
-      <div className="hidden md:block md:h-full md:min-h-0">
+    <section id="top" className="space-y-5 md:h-full">
+      <div className="hidden md:block md:h-full">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.995 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="zen-shell-panel relative overflow-hidden rounded-[34px] md:flex md:h-full md:min-h-0 md:flex-col"
+          className="overflow-hidden rounded-[34px] border border-white/10 bg-ink-950/70 shadow-panel backdrop-blur-xl md:h-full"
         >
-          <div className="zen-shell-bar relative z-[1] flex items-center justify-between border-b px-4 py-3">
+          <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#fe5f57]" />
@@ -151,39 +133,36 @@ export function DesktopWorkspace() {
             </div>
             <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.24em] text-mist">
               <span>{siteContent.hero.name}</span>
-              <span className="rounded-full border border-[#8ca291]/20 bg-[#8ca291]/10 px-2.5 py-1 text-[#d4e1d6]">Live</span>
+              <span className="rounded-full border border-[#8aa592]/20 bg-[#8aa592]/10 px-2.5 py-1 text-[#cfe0d3]">Live</span>
             </div>
           </div>
 
           <div
             ref={stageRef}
-            className="zen-workspace-bg relative min-h-0 flex-1 overflow-hidden"
+            className="relative min-h-0 flex-1 overflow-hidden bg-[radial-gradient(circle_at_16%_16%,rgba(128,154,130,0.18),transparent_20%),radial-gradient(circle_at_82%_18%,rgba(72,96,79,0.16),transparent_22%),radial-gradient(circle_at_50%_100%,rgba(16,28,20,0.52),transparent_46%),linear-gradient(180deg,rgba(255,255,255,0.018),rgba(255,255,255,0.004))]"
           >
             <motion.div
               aria-hidden
               initial={reduceMotion ? false : { opacity: 0.38, scale: 1.01 }}
-              animate={reduceMotion ? undefined : { opacity: [0.36, 0.48, 0.36], scale: [1, 1.014, 1] }}
-              transition={reduceMotion ? undefined : { duration: 20, repeat: Infinity, ease: "easeInOut" }}
-              className="zen-workspace-atmosphere zen-ambient-drift absolute inset-0"
+              animate={reduceMotion ? undefined : { opacity: [0.34, 0.46, 0.34], scale: [1, 1.012, 1] }}
+              transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(186,208,190,0.075),transparent_24%),radial-gradient(circle_at_24%_78%,rgba(128,158,136,0.08),transparent_22%),radial-gradient(circle_at_76%_72%,rgba(84,112,92,0.07),transparent_20%)]"
             />
-            <div className="zen-ambient-glow zen-ambient-drift-slow absolute inset-[-8%]" />
-            <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.028),transparent_18%,rgba(176,198,181,0.026)_52%,transparent_100%)] opacity-95" />
-            <div className="absolute inset-0 opacity-[0.045]" style={{ backgroundImage: "linear-gradient(rgba(162,182,168,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(162,182,168,0.16) 1px, transparent 1px)", backgroundSize: "42px 42px" }} />
-            <div className="absolute inset-x-0 top-0 h-52 bg-[linear-gradient(180deg,rgba(10,14,11,0.34),transparent)]" />
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(0deg,rgba(7,10,8,0.22),transparent)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(255,255,255,0.012),transparent_20%,rgba(174,198,180,0.016)_58%,transparent_100%)] opacity-90" />
+            <div className="absolute inset-x-0 top-0 h-44 bg-[linear-gradient(180deg,rgba(4,7,11,0.56),transparent)]" />
 
             <div className="absolute left-6 top-6 z-10 w-[272px]" style={{ zIndex: chromeLayerZ }}>
               <motion.div
                 initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut", delay: 0.08 }}
-                className="zen-surface rounded-[28px] px-6 py-6 backdrop-blur-xl"
+                className="rounded-[28px] border border-white/10 bg-black/24 px-6 py-6 backdrop-blur-xl"
               >
                 <Tag className="px-2.5 py-0.5 text-[11px] tracking-[0.2em] text-mist/80">{siteContent.hero.eyebrow}</Tag>
                 <div className="mt-5 space-y-5">
                   <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">{siteContent.hero.name}</p>
-                  <h1 className="text-[2rem] font-semibold leading-[1.14] tracking-[-0.02em] text-white">From analytics and operations into software and AI systems.</h1>
-                  <p className="text-[15px] leading-8 text-white/62">{siteContent.hero.subheadline}</p>
+                  <h1 className="text-[2rem] font-semibold leading-[1.16] text-white">From analytics and operations into software and AI systems.</h1>
+                  <p className="text-[15px] leading-8 text-white/72">{siteContent.hero.subheadline}</p>
                 </div>
               </motion.div>
             </div>
@@ -223,7 +202,7 @@ export function DesktopWorkspace() {
             ) : null}
 
             <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-5" style={{ zIndex: dockLayerZ }}>
-              <div className="zen-dock mx-auto flex max-w-fit items-center gap-2 rounded-[28px] px-3 py-3 backdrop-blur-xl">
+              <div className="mx-auto flex max-w-fit items-center gap-2 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(14,20,16,0.78),rgba(8,12,10,0.6))] px-3 py-3 shadow-[0_18px_48px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl">
                 {windowOrder.map((id) => {
                   const config = windowConfigs[id];
                   const state = windows[id];
@@ -233,14 +212,14 @@ export function DesktopWorkspace() {
                       key={id}
                       type="button"
                       onClick={() => openWindow(id)}
-                      whileHover={reduceMotion ? undefined : { y: -3, scale: 1.025 }}
+                      whileHover={reduceMotion ? undefined : { y: -4, scale: 1.03 }}
                       className={cn(
-                        "flex min-w-[96px] flex-col items-center rounded-[20px] border px-3 py-2.5 text-center transition duration-150",
+                        "flex min-w-[96px] flex-col items-center rounded-[20px] border px-3 py-2.5 text-center transition",
                         isVisible
-                          ? "zen-dock-active text-white"
+                          ? "border-[#9ec8a8]/24 bg-[linear-gradient(180deg,rgba(124,168,139,0.16),rgba(124,168,139,0.08))] text-white shadow-[0_14px_34px_rgba(124,168,139,0.1)]"
                           : state.isMinimized
-                            ? "border-white/12 bg-white/[0.05] text-white"
-                            : "border-transparent bg-transparent text-mist hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
+                            ? "border-white/12 bg-white/[0.06] text-white"
+                            : "border-transparent bg-transparent text-mist hover:border-white/10 hover:bg-white/[0.05]"
                       )}
                     >
                       <span className={cn("rounded-xl px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.22em]", config.tone)}>{config.shortLabel}</span>
@@ -253,7 +232,7 @@ export function DesktopWorkspace() {
 
             {hasMounted && visibleDesktopWindows.length === 0 ? (
               <div className="absolute inset-0 z-0 flex items-center justify-center px-8">
-                <div className="zen-surface rounded-[28px] p-8 text-center backdrop-blur-xl">
+                <div className="rounded-[28px] border border-white/10 bg-black/20 p-8 text-center backdrop-blur-xl">
                   <p className="font-mono text-xs uppercase tracking-[0.28em] text-mist">Workspace idle</p>
                   <p className="mt-3 text-lg text-white">Open a module from the desktop icons or dock.</p>
                 </div>
@@ -264,8 +243,8 @@ export function DesktopWorkspace() {
       </div>
 
       <div className="md:hidden">
-        <div className="space-y-4 rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,20,0.8),rgba(11,15,12,0.74))] p-4 shadow-panel backdrop-blur-xl">
-          <div className="zen-surface-soft rounded-[24px] p-5">
+        <div className="space-y-4 rounded-[30px] border border-white/10 bg-ink-950/72 p-4 shadow-panel backdrop-blur-xl">
+          <div className="rounded-[24px] border border-white/10 bg-black/18 p-5">
             <Tag>{siteContent.hero.eyebrow}</Tag>
             <p className="mt-4 font-mono text-xs uppercase tracking-[0.28em] text-signal">{siteContent.hero.name}</p>
             <h1 className="mt-3 text-3xl font-semibold leading-tight text-white">Building practical systems across data, software, automation, and AI.</h1>
@@ -273,12 +252,12 @@ export function DesktopWorkspace() {
           </div>
           <div className="grid grid-cols-3 gap-2">
             {windowOrder.map((id) => (
-              <button key={id} type="button" onClick={() => setMobileActive(id)} className={cn("rounded-[18px] border px-3 py-3 text-center text-xs uppercase tracking-[0.18em] transition", mobileActive === id ? "border-[#a7bead]/24 bg-[#7f9a88]/10 text-white" : "border-white/10 bg-white/[0.04] text-mist")}>
+              <button key={id} type="button" onClick={() => setMobileActive(id)} className={cn("rounded-[18px] border px-3 py-3 text-center text-xs uppercase tracking-[0.18em] transition", mobileActive === id ? "border-[#9ec8a8]/24 bg-[#7ca88b]/10 text-white" : "border-white/10 bg-white/[0.04] text-mist")}>
                 {windowConfigs[id].title}
               </button>
             ))}
           </div>
-          <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,20,0.84),rgba(10,13,11,0.78))]">
+          <div className="overflow-hidden rounded-[28px] border border-white/10 bg-black/20">
             <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
               <p className="font-mono text-xs uppercase tracking-[0.24em] text-mist">Active module</p>
               <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-signal">{mobileActive}</p>
@@ -363,15 +342,15 @@ function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, chil
     <motion.section
       onMouseDown={() => onFocus(id)}
       initial={reduceMotion ? false : { opacity: 0, scale: 0.985 }}
-      animate={{ opacity: 1, scale: active ? 1 : 0.996, filter: active ? "brightness(1)" : "brightness(0.94)" }}
+      animate={{ opacity: 1, scale: 1 }}
       exit={reduceMotion ? {} : { opacity: 0, scale: 0.985 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
       style={{ width: state.width, height: state.height, zIndex: state.z, x, y }}
       className={cn(
-        "zen-window absolute left-0 top-0 overflow-hidden rounded-[30px] border backdrop-blur-2xl before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]",
+        "absolute left-0 top-0 overflow-hidden rounded-[30px] border bg-[linear-gradient(180deg,rgba(8,12,10,0.94),rgba(5,8,7,0.92))] shadow-[0_28px_72px_rgba(0,0,0,0.42)] backdrop-blur-2xl",
         active
-          ? "zen-window-active"
-          : "zen-window-idle opacity-[0.95]"
+          ? "border-[#9ec8a8]/28 shadow-[0_38px_96px_rgba(0,0,0,0.5),0_0_0_1px_rgba(158,200,168,0.12),0_0_54px_rgba(124,168,139,0.12)]"
+          : "border-white/8 opacity-[0.9]"
       )}
     >
       <WindowFrame title={title} active={active} onFocus={() => onFocus(id)} onClose={() => onClose(id)} onMinimize={() => onMinimize(id)} onDragStart={startDrag}>
@@ -384,7 +363,7 @@ function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, chil
 function WindowFrame({ title, active, children, onFocus, onClose, onMinimize, onDragStart }: { title: string; active: boolean; children: React.ReactNode; onFocus: () => void; onClose: () => void; onMinimize: () => void; onDragStart: (event: React.PointerEvent<HTMLDivElement>) => void }) {
   return (
     <>
-      <div className={cn("flex cursor-grab items-center justify-between border-b px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-[background-color,border-color,box-shadow] duration-150 active:cursor-grabbing", active ? "zen-window-bar-active" : "zen-window-bar-idle")} onMouseDown={onFocus} onPointerDown={onDragStart}>
+      <div className={cn("flex cursor-grab items-center justify-between border-b px-4 py-3 active:cursor-grabbing", active ? "border-[#9ec8a8]/18 bg-[linear-gradient(180deg,rgba(124,168,139,0.14),rgba(124,168,139,0.06))]" : "border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]")} onMouseDown={onFocus} onPointerDown={onDragStart}>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <button type="button" aria-label={`Close ${title}`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onClose(); }} className="h-2.5 w-2.5 rounded-full bg-[#fe5f57]" />
@@ -393,12 +372,12 @@ function WindowFrame({ title, active, children, onFocus, onClose, onMinimize, on
           </div>
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-white">{title}</p>
-            <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.24em] text-mist/85">{active ? "active window" : "background window"}</p>
+            <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.24em] text-mist">{active ? "active window" : "background window"}</p>
           </div>
         </div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist/85">drag</p>
+        <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">drag</p>
       </div>
-      <div className="flex h-[calc(100%-53px)] min-h-0 flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.008)_18%,rgba(11,16,13,0.08)_100%)]">
+      <div className="flex h-[calc(100%-53px)] min-h-0 flex-col overflow-hidden">
         <div className="min-h-0 flex-1 overflow-y-auto p-5">{children}</div>
       </div>
     </>
@@ -417,7 +396,7 @@ function AboutWindow({ mobile = false }: { mobile?: boolean }) {
   return (
     <div className="space-y-5 pr-1">
       <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="zen-surface-soft min-w-0 rounded-[24px] p-5">
+        <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
           <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Operating profile</p>
           <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Grounded in analytics and operations. Moving deeper into systems.</h2>
           <div className="mt-5 space-y-4">
@@ -428,15 +407,15 @@ function AboutWindow({ mobile = false }: { mobile?: boolean }) {
         </div>
         <div className="min-w-0 space-y-4">
           {siteContent.about.principles.map((item, index) => (
-            <div key={item} className="zen-surface-soft rounded-[24px] p-5">
+            <div key={item} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
               <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-signal">Principle 0{index + 1}</p>
-              <p className="mt-3 text-base leading-7 text-white/90">{item}</p>
+              <p className="mt-3 text-base leading-7 text-white">{item}</p>
             </div>
           ))}
         </div>
       </div>
       <div className={cn("grid gap-4", mobile ? "" : "xl:grid-cols-[1.05fr_0.95fr]")}>
-        <div className="zen-surface-soft min-w-0 rounded-[24px] p-5">
+        <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
           <p className="font-mono text-xs uppercase tracking-[0.24em] text-signal">Experience</p>
           <div className="mt-4 space-y-3">
             {siteContent.experience.map((item) => (
@@ -445,13 +424,13 @@ function AboutWindow({ mobile = false }: { mobile?: boolean }) {
                   <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-signal">{item.period}</p>
                   <p className="text-xs uppercase tracking-[0.18em] text-mist">{item.company}</p>
                 </div>
-                <h3 className="mt-3 text-lg font-medium text-white/92">{item.role}</h3>
+                <h3 className="mt-3 text-lg font-medium text-white">{item.role}</h3>
                 <p className="mt-2 text-sm leading-7 text-mist">{item.summary}</p>
               </div>
             ))}
           </div>
         </div>
-        <div className="zen-surface-soft min-w-0 rounded-[24px] p-5">
+        <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
           <p className="font-mono text-xs uppercase tracking-[0.24em] text-signal">Capability map</p>
           <div className="mt-4 space-y-3">
             {siteContent.skills.map((group) => (
@@ -459,7 +438,7 @@ function AboutWindow({ mobile = false }: { mobile?: boolean }) {
                 <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mist">{group.title}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {group.items.map((item) => (
-                    <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/84">{item}</span>
+                    <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-slate-100">{item}</span>
                   ))}
                 </div>
               </div>
@@ -483,13 +462,13 @@ function ProjectsWindow({ mobile = false }: { mobile?: boolean }) {
       </div>
       <div className={cn("grid gap-4", mobile ? "" : "xl:grid-cols-2")}>
         {siteContent.projects.map((project, index) => (
-          <article key={project.title} className="zen-surface-soft rounded-[24px] p-5">
+          <article key={project.title} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
             <div className="flex items-center justify-between gap-3">
               <Tag>0{index + 1}</Tag>
               <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">{project.stack.slice(0, 3).join(" / ")}</span>
             </div>
-            <h3 className="mt-4 text-xl font-medium text-white/92">{project.title}</h3>
-            <p className="mt-2 text-sm leading-7 text-white/74">{project.summary}</p>
+            <h3 className="mt-4 text-xl font-medium text-white">{project.title}</h3>
+            <p className="mt-2 text-sm leading-7 text-slate-200">{project.summary}</p>
             <div className="mt-4 rounded-[20px] border border-white/8 bg-black/18 p-4">
               <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">What I built</p>
               <p className="mt-2 text-sm leading-7 text-mist">{project.built}</p>
@@ -505,7 +484,7 @@ function ProjectsWindow({ mobile = false }: { mobile?: boolean }) {
 function ResumeWindow() {
   return (
     <div className="space-y-5">
-      <div className="zen-surface-soft rounded-[24px] p-5">
+      <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
         <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Resume</p>
         <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Straightforward handoff for recruiters and hiring managers.</h2>
         <p className="mt-4 text-sm leading-8 text-mist sm:text-base">Keep this window simple. Open the PDF when you need it, or download it directly.</p>
@@ -521,7 +500,7 @@ function ResumeWindow() {
 function ContactWindow() {
   return (
     <div className="space-y-4">
-      <div className="zen-surface-soft rounded-[24px] p-5">
+      <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
         <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Access channel</p>
         <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Open to good conversations around data, software, automation, and AI work.</h2>
         <p className="mt-4 text-sm leading-8 text-mist sm:text-base">{siteContent.contact.prompt}</p>
@@ -550,7 +529,7 @@ function NowWindow() {
       </div>
       <div className="grid gap-3">
         {siteContent.now.map((item, index) => (
-          <div key={item} className="zen-surface-soft flex gap-4 rounded-[22px] p-4">
+          <div key={item} className="flex gap-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
             <span className="font-mono text-xs uppercase tracking-[0.24em] text-signal">0{index + 1}</span>
             <p className="text-sm leading-7 text-mist">{item}</p>
           </div>
@@ -562,9 +541,9 @@ function NowWindow() {
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="zen-surface rounded-[22px] p-4 backdrop-blur-xl">
+    <div className="rounded-[22px] border border-white/10 bg-black/22 p-4 backdrop-blur-xl">
       <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">{label}</p>
-      <p className="mt-2 text-sm font-medium leading-6 text-white/88">{value}</p>
+      <p className="mt-2 text-sm leading-6 text-white">{value}</p>
     </div>
   );
 }
