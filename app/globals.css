@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(31, 91, 137, 0.2), transparent 26%),
+    radial-gradient(circle at 85% 10%, rgba(126, 240, 195, 0.09), transparent 20%),
+    linear-gradient(180deg, #04070b 0%, #081019 38%, #04070b 100%);
+  color: #eff7ff;
+  font-family: var(--font-sans), sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.045) 0.6px, transparent 0.6px);
+  background-size: 18px 18px;
+  opacity: 0.12;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(88, 198, 255, 0.22);
+  color: #eff7ff;
+}
+
+.panel-sheen {
+  position: relative;
+}
+
+.panel-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 34%);
+  opacity: 0.55;
+}
+
+.scanline {
+  background-image:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 12%),
+    linear-gradient(transparent 50%, rgba(88, 198, 255, 0.035) 51%, transparent 52%);
+  background-size: 100% 100%, 100% 5px;
+}
+
+.mask-fade {
+  mask-image: linear-gradient(to bottom, black 84%, transparent 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
