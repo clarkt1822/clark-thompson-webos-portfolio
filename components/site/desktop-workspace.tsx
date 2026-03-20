@@ -29,6 +29,12 @@ type WindowState = {
 };
 type StageSize = { width: number; height: number };
 type WindowPresenceAction = "open" | "close" | "minimize";
+type ExperienceEntry = {
+  role: string;
+  company: string;
+  period: string;
+  bullets: readonly string[];
+};
 
 const stagePadding = 18;
 const dockReserve = 112;
@@ -65,6 +71,83 @@ const initialWindowOffsets: Record<WindowId, { x: number; y: number }> = {
   resume: { x: 92, y: -24 },
   contact: { x: 72, y: 52 },
 };
+
+const experienceEntries: readonly ExperienceEntry[] = [
+  {
+    role: "AI Consultant (Contract)",
+    company: "AutomateNexus",
+    period: "Feb 2026 - Present",
+    bullets: [
+      "Partner with SMB operators to analyze workflows, identify bottlenecks, and design practical AI-driven automation systems that reduce manual work and improve operational efficiency.",
+      "Lead discovery conversations to translate business processes into clear technical requirements, prioritizing automation initiatives based on ROI and execution feasibility.",
+      "Design and deploy production-grade workflows using Make, n8n, and API integrations across CRMs, communication tools, and accounting systems.",
+      "Implement AI-enabled document processing, intelligent routing logic, and multi-step automations with monitoring, logging, and error handling to ensure reliability at scale."
+    ]
+  },
+  {
+    role: "Automation and Data Lead",
+    company: "SimWorld LLC",
+    period: "Nov 2022 - Oct 2025",
+    bullets: [
+      "Designed and deployed AI-enabled operational workflows using SQL and Python, reducing manual reporting and data processing time by 20%.",
+      "Built data pipelines and KPI tracking across multiple systems to surface user engagement and revenue insights.",
+      "Partnered with engineering teams on QA and backend validation for AI-driven systems.",
+      "Created dashboards and reporting workflows using Tableau, Excel, SQL, and Python.",
+      "Used historical platform data to forecast revenue trends and retention patterns, influencing roadmap and resource decisions."
+    ]
+  },
+  {
+    role: "Sales Development Representative",
+    company: "FlowPath",
+    period: "Jan 2025 - Jun 2025",
+    bullets: [
+      "Worked with an AI-based facilities management platform focused on operational automation and workflow efficiency.",
+      "Used data insights to support lead qualification, messaging refinement, and pipeline optimization.",
+      "Collaborated across sales and marketing to connect platform capabilities to customer pain points."
+    ]
+  },
+  {
+    role: "Sales Operations Specialist",
+    company: "Interim Physicians",
+    period: "Oct 2023 - Jan 2025",
+    bullets: [
+      "Optimized AI-assisted outreach and sourcing tools to improve recruiter workflows and provider engagement.",
+      "Managed and analyzed a CRM database of 300,000+ records to improve outreach efficiency and performance.",
+      "Identified data inconsistencies and process inefficiencies in AI-supported workflows."
+    ]
+  },
+  {
+    role: "Sales Agent / Customer Service Representative",
+    company: "Symmetry Financial Group & Intuit (Contract)",
+    period: "Nov 2022 - Nov 2023",
+    bullets: [
+      "Balanced two concurrent contract roles across sales and customer support.",
+      "Conducted outbound outreach and client matching for insurance products.",
+      "Supported customers and documented interactions in Salesforce in a remote environment."
+    ]
+  },
+  {
+    role: "Senior Account Executive",
+    company: "PLS Logistics Services",
+    period: "Jan 2023 - Aug 2023",
+    bullets: [
+      "Managed business development and client relationships in a 3PL sales environment.",
+      "Built new business pipelines and delivered tailored logistics solutions.",
+      "Collaborated across teams to support service delivery and client outcomes."
+    ]
+  },
+  {
+    role: "Staff Advisor / Head of Recruiting / Unit Head",
+    company: "URJ Henry S. Jacobs Camp",
+    period: "May 2018 - Aug 2022",
+    bullets: [
+      "Held multiple leadership roles across recruiting, operations, and team management.",
+      "Supported performance, scheduling, and conflict resolution for large teams.",
+      "Recruited and placed 100+ staff members.",
+      "Built early operations experience through logistics, scheduling, and data tracking."
+    ]
+  }
+] as const;
 
 export function DesktopWorkspace() {
   const reduceMotion = !!useReducedMotion();
@@ -206,7 +289,7 @@ export function DesktopWorkspace() {
                 <Tag className="px-2.5 py-0.5 text-[11px] tracking-[0.2em] text-mist/80">{siteContent.hero.eyebrow}</Tag>
                 <div className="mt-5 space-y-5">
                   <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">{siteContent.hero.name}</p>
-                  <h1 className="text-[2rem] font-semibold leading-[1.16] text-white">From analytics and operations into software and AI systems.</h1>
+                  <h1 className="text-[2rem] font-semibold leading-[1.16] text-white">Grounded in analytics and operations. Expanding into software and AI systems.</h1>
                   <p className="text-[15px] leading-8 text-white/72">{siteContent.hero.subheadline}</p>
                 </div>
               </motion.div>
@@ -485,6 +568,7 @@ function ExperienceWindow() {
       <div>
         <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Experience</p>
         <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Experience</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-mist">Selected roles across automation, data, operations, and business-facing execution.</p>
       </div>
       <ExperienceContent />
     </div>
@@ -696,16 +780,25 @@ function PrinciplesCards() {
 function ExperienceContent() {
   return (
     <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
-      <div className="space-y-3">
-        {siteContent.experience.map((item) => (
-          <div key={`${item.period}-${item.role}`} className="rounded-[20px] border border-white/8 bg-black/18 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-signal">{item.period}</p>
-              <p className="text-xs uppercase tracking-[0.18em] text-mist">{item.company}</p>
+      <div className="space-y-4">
+        {experienceEntries.map((item, index) => (
+          <article key={`${item.period}-${item.role}`} className={cn("rounded-[20px] border border-white/8 bg-black/18 p-5", index < 2 ? "bg-[#8da58c]/[0.08]" : "")}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <h3 className="text-lg font-medium text-white">{item.role}</h3>
+                <p className="mt-1 text-sm uppercase tracking-[0.16em] text-mist">{item.company}</p>
+              </div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-signal sm:text-right">{item.period}</p>
             </div>
-            <h3 className="mt-3 text-lg font-medium text-white">{item.role}</h3>
-            <p className="mt-2 text-sm leading-7 text-mist">{item.summary}</p>
-          </div>
+            <ul className="mt-4 space-y-2 text-sm leading-7 text-mist">
+              {item.bullets.map((bullet) => (
+                <li key={bullet} className="flex items-start gap-3">
+                  <span aria-hidden className="mt-2 h-1.5 w-1.5 rounded-full bg-[#9ec8a8]" />
+                  <span className="flex-1">{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
         ))}
       </div>
     </div>

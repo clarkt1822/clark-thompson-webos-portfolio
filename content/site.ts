@@ -5,10 +5,10 @@ export const siteContent = {
     eyebrow: "System Profile",
     headline: "Building practical systems across data, software, automation, and applied AI.",
     subheadline:
-      "Background in analytics, reporting, workflow problem-solving, and business-facing technical work. Now pushing deeper into software engineering and AI systems by shipping useful tools in public.",
+      "Background in analytics, reporting, and workflow problem-solving across business systems. Now building software, automation, and AI tools while continuing to apply that foundation.",
     focus: "RAG, workflow automation, backend fundamentals, productized internal tools",
     status: "Always Learning",
-    availability: "Open to data, software, automation, and AI-leaning roles",
+    availability: "Open to data, software, automation, and AI-focused roles —including analyst positions— as well as freelance/contract work and web design engagements.",
     ctas: [
       { label: "Open Projects", href: "#projects", variant: "primary" as const },
       {
@@ -26,16 +26,16 @@ export const siteContent = {
   },
   about: {
     intro:
-      "I did not start as a software engineer. I started where a lot of real business problems live: analytics, reporting, process friction, bad handoffs, and unclear decision-making.",
+      "I started where a lot of real business problems live: analytics, reporting, process friction, bad handoffs, and unclear decision-making.",
     body: [
-      "That background matters. It trained me to care about systems that actually help someone do better work, not just systems that sound impressive in a demo.",
-      "Now I am moving deeper into software, automation, and applied AI. I am sharpening the engineering side while keeping the practical lens: better workflows, clearer decisions, fewer repetitive steps, more leverage.",
-      "I am most interested in work that sits at the intersection of data, product thinking, and implementation. Internal tools. Automation. AI-assisted workflows. Decision systems. Products that solve a real operational problem."
+      "That foundation shaped how I approach systems. I care about things that are actually useful in practice. Tools that make work clearer, faster, and more reliable, not just systems that sound impressive in a demo.",
+      "Now I build on top of that foundation using software, automation, and applied AI, continuously sharpening the engineering side while keeping the same practical lens. Better workflows, clearer decisions, fewer repetitive steps, and more leverage.",
+      "I’m most interested in work at the intersection of data, product thinking, and implementation. Internal tools, automation, and AI-assisted systems that solve real operational problems."
     ],
     principles: [
-      "Business context matters.",
-      "Useful systems beat hype every time.",
-      "Range is earned through shipped work."
+      "Consistent learning and growth beat any single project or role.",
+      "Reliable systems, built on sound foundations, beat hype every time.",
+      "Build, test, refine, repeat — progress comes from shipping and improving, not waiting to be “ready.”"
     ]
   },
   projects: [
