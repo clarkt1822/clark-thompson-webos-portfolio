@@ -174,13 +174,6 @@ export const siteContent = {
       items: ["GitHub", "Vercel", "Supabase", "Excel", "Documentation systems"]
     }
   ],
-  now: [
-    "Building a RAG knowledge assistant with better retrieval hygiene and clearer source grounding.",
-    "Sharpening SQL, Python, TypeScript, and backend fundamentals so the engineering side is real depth, not surface-level familiarity.",
-    "Pushing from analytics execution into software and AI systems work that creates leverage.",
-    "Exploring agentic workflows carefully after stronger foundations in retrieval, constraints, and evaluation.",
-    "Building in public and tightening the feedback loop through shipped work."
-  ],
   contact: {
     prompt: "Open to conversations around data, software, automation, and applied AI work.",
     links: [
@@ -190,7 +183,7 @@ export const siteContent = {
     ]
   },
   terminal: {
-    commands: ["help", "about", "projects", "stack", "now", "resume", "contact", "clear"]
+    commands: ["help", "about", "projects", "stack", "resume", "contact", "clear"]
   }
 } as const;
 

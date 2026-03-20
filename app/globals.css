@@ -241,25 +241,29 @@ select {
 
 .zen-window {
   background: linear-gradient(180deg, rgba(20, 27, 22, 0.92), rgba(11, 16, 13, 0.89));
+  border: 1px solid rgba(202, 222, 209, 0.12);
   box-shadow:
     0 28px 72px rgba(0, 0, 0, 0.42),
     0 0 24px rgba(124, 153, 132, 0.035);
   backdrop-filter: blur(20px) saturate(112%);
+  transform-origin: 50% 50%;
 }
 
 .zen-window-active {
   border-color: var(--surface-border-strong);
+  background: linear-gradient(180deg, rgba(22, 30, 24, 0.96), rgba(11, 16, 13, 0.92));
   box-shadow:
-    0 38px 96px rgba(0, 0, 0, 0.52),
-    0 0 32px rgba(122, 153, 132, 0.08),
+    0 42px 104px rgba(0, 0, 0, 0.56),
+    0 0 38px rgba(122, 153, 132, 0.1),
     0 0 0 1px rgba(224, 236, 227, 0.03),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .zen-window-idle {
   border-color: rgba(202, 222, 209, 0.1);
+  background: linear-gradient(180deg, rgba(18, 24, 20, 0.88), rgba(10, 15, 12, 0.86));
   box-shadow:
-    0 24px 58px rgba(0, 0, 0, 0.34),
+    0 24px 60px rgba(0, 0, 0, 0.32),
     0 0 0 1px rgba(255, 255, 255, 0.018),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
@@ -292,6 +296,130 @@ select {
   box-shadow:
     0 12px 28px rgba(0, 0, 0, 0.22),
     0 0 22px rgba(112, 137, 119, 0.07);
+}
+
+.desktop-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.desktop-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(216, 229, 219, 0.07), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 18%, transparent 100%);
+  opacity: 0.9;
+}
+
+.desktop-stage {
+  background:
+    radial-gradient(circle at 16% 16%, rgba(128, 154, 130, 0.17), transparent 20%),
+    radial-gradient(circle at 82% 18%, rgba(72, 96, 79, 0.15), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(16, 28, 20, 0.52), transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.005));
+}
+
+.desktop-stage-glow {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(186, 208, 190, 0.075), transparent 24%),
+    radial-gradient(circle at 24% 78%, rgba(128, 158, 136, 0.08), transparent 22%),
+    radial-gradient(circle at 76% 72%, rgba(84, 112, 92, 0.07), transparent 20%);
+}
+
+.desktop-stage-sheen {
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.012), transparent 20%, rgba(174, 198, 180, 0.016) 58%, transparent 100%);
+}
+
+.desktop-stage-vignette {
+  background:
+    radial-gradient(circle at 50% 46%, transparent 56%, rgba(3, 5, 4, 0.22) 100%),
+    linear-gradient(180deg, rgba(4, 7, 11, 0.54), transparent 20%, transparent 80%, rgba(3, 4, 5, 0.18) 100%);
+}
+
+.desktop-stage-focus {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(188, 210, 192, 0.12), rgba(115, 144, 123, 0.05) 42%, transparent 74%);
+}
+
+.desktop-dock-button {
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+.desktop-dock-button:hover,
+.desktop-dock-button:focus-visible {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.desktop-dock-button:focus-visible,
+.desktop-launcher-pill:focus-visible,
+.desktop-window-control:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 0 3px rgba(134, 163, 143, 0.24);
+}
+
+.desktop-dock-button-active {
+  border-color: rgba(170, 198, 178, 0.24);
+  background: linear-gradient(180deg, rgba(124, 168, 139, 0.16), rgba(124, 168, 139, 0.08));
+  box-shadow:
+    0 14px 34px rgba(124, 168, 139, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.desktop-launcher-pill {
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+.desktop-launcher-pill:hover,
+.desktop-launcher-pill:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 22px rgba(0, 0, 0, 0.18);
+}
+
+.desktop-launcher-pill-accent:hover,
+.desktop-launcher-pill-accent:focus-visible {
+  border-color: rgba(167, 190, 173, 0.38);
+  background: rgba(127, 154, 136, 0.18);
+}
+
+.desktop-launcher-pill-accent {
+  border-color: rgba(167, 190, 173, 0.22);
+  background: rgba(127, 154, 136, 0.12);
+}
+
+.desktop-window-control {
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease;
+}
+
+.desktop-window-control:hover,
+.desktop-window-control:focus-visible {
+  transform: scale(1.08);
+  filter: saturate(1.04) brightness(1.05);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
 }
 
 .text-muted-soft {

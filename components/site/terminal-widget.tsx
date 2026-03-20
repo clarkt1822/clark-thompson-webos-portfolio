@@ -7,7 +7,7 @@ import { siteContent } from "@/content/site";
 const responses: Record<string, string[]> = {
   help: [
     "Available commands:",
-    "about, projects, stack, now, resume, contact, clear"
+    "about, projects, stack, resume, contact, clear"
   ],
   about: [
     "Clark Thompson",
@@ -18,7 +18,6 @@ const responses: Record<string, string[]> = {
     (project) => `${project.title} -> ${project.summary}`
   ),
   stack: siteContent.skills.map((group) => `${group.title}: ${group.items.join(", ")}`),
-  now: [...siteContent.now],
   resume: [`Resume path: ${siteContent.resumePath}`],
   contact: siteContent.contact.links.map((link) => `${link.label}: ${link.href}`)
 };

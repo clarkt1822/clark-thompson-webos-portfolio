@@ -66,7 +66,6 @@ components/
     experience-panel.tsx
     footer-note.tsx
     launcher-nav.tsx
-    now-panel.tsx
     projects-panel.tsx
     reveal.tsx
     skills-panel.tsx
@@ -101,7 +100,6 @@ tsconfig.json
 - Projects: `content/site.ts` in `siteContent.projects`
 - Experience: `content/site.ts` in `siteContent.experience`
 - Skills: `content/site.ts` in `siteContent.skills`
-- Now section: `content/site.ts` in `siteContent.now`
 - Contact links: `content/site.ts` in `siteContent.contact.links`
 - Resume path: `content/site.ts` in `siteContent.resumePath`
 

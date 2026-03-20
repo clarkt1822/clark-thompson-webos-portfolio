@@ -7,7 +7,7 @@ import { Tag } from "@/components/ui/tag";
 import { siteContent } from "@/content/site";
 import { cn } from "@/lib/utils";
 
-type WindowId = "about" | "projects" | "resume" | "contact" | "now";
+type WindowId = "about" | "skills" | "experience" | "projects" | "resume" | "contact";
 type WindowConfig = {
   id: WindowId;
   title: string;
@@ -28,6 +28,7 @@ type WindowState = {
   height: number;
 };
 type StageSize = { width: number; height: number };
+type WindowPresenceAction = "open" | "close" | "minimize";
 
 const stagePadding = 18;
 const dockReserve = 112;
@@ -39,27 +40,30 @@ const dockLayerZ = 50;
 
 const windowConfigs: Record<WindowId, WindowConfig> = {
   about: { id: "about", title: "About", shortLabel: "ABT", tone: "bg-white/8 text-white", defaultWidth: 760, defaultHeight: 580, minWidth: 560, minHeight: 360 },
+  skills: { id: "skills", title: "Skills", shortLabel: "SKL", tone: "bg-[#7f9fb1]/16 text-[#dfeaf0]", defaultWidth: 620, defaultHeight: 520, minWidth: 480, minHeight: 320 },
+  experience: { id: "experience", title: "Experience", shortLabel: "EXP", tone: "bg-[#8da58c]/16 text-[#e3ece2]", defaultWidth: 640, defaultHeight: 520, minWidth: 500, minHeight: 320 },
   projects: { id: "projects", title: "Projects", shortLabel: "PRJ", tone: "bg-[#7ca88b]/16 text-[#dce9df]", defaultWidth: 720, defaultHeight: 540, minWidth: 520, minHeight: 340 },
   resume: { id: "resume", title: "Resume", shortLabel: "PDF", tone: "bg-[#9ab4a1]/16 text-[#edf3ef]", defaultWidth: 470, defaultHeight: 300, minWidth: 400, minHeight: 240 },
   contact: { id: "contact", title: "Contact", shortLabel: "COM", tone: "bg-[#8aa592]/16 text-[#e3ede6]", defaultWidth: 500, defaultHeight: 420, minWidth: 400, minHeight: 280 },
-  now: { id: "now", title: "Now", shortLabel: "NOW", tone: "bg-white/8 text-white", defaultWidth: 560, defaultHeight: 460, minWidth: 420, minHeight: 300 },
 };
 
-const windowOrder: WindowId[] = ["about", "projects", "resume", "contact", "now"];
+const windowOrder: WindowId[] = ["about", "skills", "experience", "projects", "resume", "contact"];
 const hiddenWindowBase = { isOpen: false, isMinimized: false, x: 0, y: 0, z: baseWindowZ, width: 0, height: 0 };
 const baseWindows: Record<WindowId, WindowState> = {
-  about: { ...hiddenWindowBase, isOpen: true, z: baseWindowZ + 5 },
+  about: { ...hiddenWindowBase, z: baseWindowZ + 5 },
+  skills: { ...hiddenWindowBase },
+  experience: { ...hiddenWindowBase },
   projects: { ...hiddenWindowBase },
   resume: { ...hiddenWindowBase },
   contact: { ...hiddenWindowBase },
-  now: { ...hiddenWindowBase },
 };
 const initialWindowOffsets: Record<WindowId, { x: number; y: number }> = {
   about: { x: 0, y: 0 },
+  skills: { x: 28, y: -12 },
+  experience: { x: 62, y: 20 },
   projects: { x: 48, y: 28 },
   resume: { x: 92, y: -24 },
   contact: { x: 72, y: 52 },
-  now: { x: 116, y: 12 },
 };
 
 export function DesktopWorkspace() {
@@ -69,13 +73,21 @@ export function DesktopWorkspace() {
   const initializedRef = React.useRef(false);
   const [stageSize, setStageSize] = React.useState<StageSize>({ width: 0, height: 0 });
   const [windows, setWindows] = React.useState<Record<WindowId, WindowState>>(baseWindows);
+  const [windowActions, setWindowActions] = React.useState<Record<WindowId, WindowPresenceAction>>({
+    about: "open",
+    skills: "open",
+    experience: "open",
+    projects: "open",
+    resume: "open",
+    contact: "open",
+  });
   const [mobileActive, setMobileActive] = React.useState<WindowId>("about");
   const visibleDesktopWindows = windowOrder.filter((id) => windows[id].isOpen && !windows[id].isMinimized);
   const activeWindowId =
     visibleDesktopWindows.reduce<WindowId | null>((currentActive, id) => {
       if (!currentActive) return id;
       return windows[id].z > windows[currentActive].z ? id : currentActive;
-    }, null) ?? "about";
+    }, null);
   
 
   React.useEffect(() => {
@@ -106,21 +118,32 @@ export function DesktopWorkspace() {
 
   const openWindow = React.useCallback((id: WindowId) => {
     topZ.current += 1;
+    setWindowActions((current) => ({ ...current, [id]: "open" }));
     setWindows((current) => {
       const next = current[id];
       if (next.isOpen && !next.isMinimized) {
         return { ...current, [id]: { ...next, z: topZ.current } };
       }
-      const layout = next.width > 0 && next.height > 0 ? next : createWindowFromConfig(id, stageSize, topZ.current);
+      const layout =
+        next.isMinimized && next.width > 0 && next.height > 0
+          ? next
+          : createWindowFromConfig(
+              id,
+              stageSize,
+              topZ.current,
+              id === "about" ? { centered: true } : { centered: true, ...initialWindowOffsets[id] }
+            );
       return { ...current, [id]: { ...layout, isOpen: true, isMinimized: false, z: topZ.current } };
     });
   }, [stageSize]);
 
   const closeWindow = React.useCallback((id: WindowId) => {
+    setWindowActions((current) => ({ ...current, [id]: "close" }));
     setWindows((current) => ({ ...current, [id]: { ...current[id], isOpen: false, isMinimized: false } }));
   }, []);
 
   const minimizeWindow = React.useCallback((id: WindowId) => {
+    setWindowActions((current) => ({ ...current, [id]: "minimize" }));
     setWindows((current) => ({ ...current, [id]: { ...current[id], isMinimized: true } }));
   }, []);
 
@@ -135,9 +158,9 @@ export function DesktopWorkspace() {
           initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.995 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="flex h-full min-h-0 flex-col overflow-hidden rounded-[34px] border border-white/10 bg-ink-950/70 shadow-panel backdrop-blur-xl"
+          className="zen-shell-panel desktop-shell flex h-full min-h-0 flex-col overflow-hidden rounded-[34px]"
         >
-          <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
+          <div className="zen-shell-bar flex items-center justify-between border-b px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#fe5f57]" />
@@ -154,17 +177,24 @@ export function DesktopWorkspace() {
 
           <div
             ref={stageRef}
-            className="relative min-h-0 flex-1 overflow-hidden bg-[radial-gradient(circle_at_16%_16%,rgba(128,154,130,0.18),transparent_20%),radial-gradient(circle_at_82%_18%,rgba(72,96,79,0.16),transparent_22%),radial-gradient(circle_at_50%_100%,rgba(16,28,20,0.52),transparent_46%),linear-gradient(180deg,rgba(255,255,255,0.018),rgba(255,255,255,0.004))]"
+            className="desktop-stage relative min-h-0 flex-1 overflow-hidden"
           >
             <motion.div
               aria-hidden
               initial={reduceMotion ? false : { opacity: 0.38, scale: 1.01 }}
               animate={reduceMotion ? undefined : { opacity: [0.34, 0.46, 0.34], scale: [1, 1.012, 1] }}
               transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(186,208,190,0.075),transparent_24%),radial-gradient(circle_at_24%_78%,rgba(128,158,136,0.08),transparent_22%),radial-gradient(circle_at_76%_72%,rgba(84,112,92,0.07),transparent_20%)]"
+              className="desktop-stage-glow absolute inset-0"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(255,255,255,0.012),transparent_20%,rgba(174,198,180,0.016)_58%,transparent_100%)] opacity-90" />
-            <div className="absolute inset-x-0 top-0 h-44 bg-[linear-gradient(180deg,rgba(4,7,11,0.56),transparent)]" />
+            <div aria-hidden className="desktop-stage-sheen absolute inset-0 opacity-90" />
+            <div aria-hidden className="desktop-stage-vignette absolute inset-0" />
+            <motion.div
+              aria-hidden
+              initial={reduceMotion ? false : { opacity: 0.18, scale: 0.98 }}
+              animate={reduceMotion ? { opacity: 0.24, scale: 1 } : { opacity: [0.18, 0.28, 0.2], scale: [0.985, 1.015, 1] }}
+              transition={reduceMotion ? undefined : { duration: 20, repeat: Infinity, ease: "easeInOut" }}
+              className="desktop-stage-focus absolute inset-[10%_18%_26%_24%] rounded-[44px] blur-3xl"
+            />
 
             <div className="absolute left-6 top-6 z-10 w-[272px]" style={{ zIndex: chromeLayerZ }}>
               <motion.div
@@ -183,13 +213,13 @@ export function DesktopWorkspace() {
             </div>
 
             <div className="absolute right-6 top-6 z-10 w-[240px] space-y-3" style={{ zIndex: chromeLayerZ }}>
-              <MetricCard label="Current focus" value={windowConfigs[activeWindowId].title} />
+              <MetricCard label="Current focus" value={activeWindowId ? windowConfigs[activeWindowId].title : "Idle"} />
               <MetricCard label="Status" value={siteContent.hero.status} />
               <MetricCard label="Availability" value={siteContent.hero.availability} />
             </div>
 
           
-              <AnimatePresence>
+              <AnimatePresence initial={false}>
                 {windowOrder.map((id) => {
                   const state = windows[id];
                   const config = windowConfigs[id];
@@ -204,6 +234,7 @@ export function DesktopWorkspace() {
                       active={active}
                       stageSize={stageSize}
                       reduceMotion={reduceMotion}
+                      presenceAction={windowActions[id]}
                       onFocus={bringToFront}
                       onClose={closeWindow}
                       onMinimize={minimizeWindow}
@@ -217,7 +248,7 @@ export function DesktopWorkspace() {
            
 
             <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-5" style={{ zIndex: dockLayerZ }}>
-              <div className="mx-auto flex max-w-fit items-center gap-2 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(14,20,16,0.78),rgba(8,12,10,0.6))] px-3 py-3 shadow-[0_18px_48px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl">
+              <div className="zen-dock mx-auto flex max-w-fit items-center gap-2 rounded-[28px] px-3 py-3">
                 {windowOrder.map((id) => {
                   const config = windowConfigs[id];
                   const state = windows[id];
@@ -227,14 +258,15 @@ export function DesktopWorkspace() {
                       key={id}
                       type="button"
                       onClick={() => openWindow(id)}
-                      whileHover={reduceMotion ? undefined : { y: -4, scale: 1.03 }}
+                      whileHover={reduceMotion ? undefined : { y: -3, scale: 1.02 }}
+                      whileTap={reduceMotion ? undefined : { y: -1, scale: 0.992 }}
                       className={cn(
-                        "flex min-w-[96px] flex-col items-center rounded-[20px] border px-3 py-2.5 text-center transition",
+                        "desktop-dock-button flex min-w-[96px] flex-col items-center rounded-[20px] border px-3 py-2.5 text-center",
                         isVisible
-                          ? "border-[#9ec8a8]/24 bg-[linear-gradient(180deg,rgba(124,168,139,0.16),rgba(124,168,139,0.08))] text-white shadow-[0_14px_34px_rgba(124,168,139,0.1)]"
+                          ? "desktop-dock-button-active text-white"
                           : state.isMinimized
                             ? "border-white/12 bg-white/[0.06] text-white"
-                            : "border-transparent bg-transparent text-mist hover:border-white/10 hover:bg-white/[0.05]"
+                            : "border-transparent bg-transparent text-mist"
                       )}
                     >
                       <span className={cn("rounded-xl px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.22em]", config.tone)}>{config.shortLabel}</span>
@@ -287,7 +319,7 @@ export function DesktopWorkspace() {
   );
 }
 
-function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, children, onFocus, onClose, onMinimize, onDragComplete }: { id: WindowId; title: string; state: WindowState; active: boolean; stageSize: StageSize; reduceMotion: boolean; children: React.ReactNode; onFocus: (id: WindowId) => void; onClose: (id: WindowId) => void; onMinimize: (id: WindowId) => void; onDragComplete: (id: WindowId, x: number, y: number) => void }) {
+function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, presenceAction, children, onFocus, onClose, onMinimize, onDragComplete }: { id: WindowId; title: string; state: WindowState; active: boolean; stageSize: StageSize; reduceMotion: boolean; presenceAction: WindowPresenceAction; children: React.ReactNode; onFocus: (id: WindowId) => void; onClose: (id: WindowId) => void; onMinimize: (id: WindowId) => void; onDragComplete: (id: WindowId, x: number, y: number) => void }) {
   const x = useMotionValue(state.x);
   const y = useMotionValue(state.y);
   const isDraggingRef = React.useRef(false);
@@ -356,16 +388,23 @@ function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, chil
   return (
     <motion.section
       onMouseDown={() => onFocus(id)}
-      initial={reduceMotion ? false : { opacity: 0, scale: 0.985 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={reduceMotion ? {} : { opacity: 0, scale: 0.985 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
+      initial={reduceMotion ? false : { opacity: 0, scale: 0.982 }}
+      animate={{
+        opacity: active ? 1 : 0.96,
+        scale: active ? 1 : 0.994,
+      }}
+      exit={
+        reduceMotion
+          ? { opacity: 0 }
+          : presenceAction === "minimize"
+            ? { opacity: 0, scale: 0.972, transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }
+            : { opacity: 0, scale: 0.986, transition: { duration: 0.16, ease: [0.4, 0, 1, 1] } }
+      }
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       style={{ width: state.width, height: state.height, zIndex: state.z, x, y }}
       className={cn(
-        "absolute left-0 top-0 overflow-hidden rounded-[30px] border bg-[linear-gradient(180deg,rgba(8,12,10,0.94),rgba(5,8,7,0.92))] shadow-[0_28px_72px_rgba(0,0,0,0.42)] backdrop-blur-2xl",
-        active
-          ? "border-[#9ec8a8]/28 shadow-[0_38px_96px_rgba(0,0,0,0.5),0_0_0_1px_rgba(158,200,168,0.12),0_0_54px_rgba(124,168,139,0.12)]"
-          : "border-white/8 opacity-[0.9]"
+        "zen-window absolute left-0 top-0 overflow-hidden rounded-[30px] border",
+        active ? "zen-window-active" : "zen-window-idle"
       )}
     >
       <WindowFrame title={title} active={active} onFocus={() => onFocus(id)} onClose={() => onClose(id)} onMinimize={() => onMinimize(id)} onDragStart={startDrag}>
@@ -378,11 +417,11 @@ function DesktopWindow({ id, title, state, active, stageSize, reduceMotion, chil
 function WindowFrame({ title, active, children, onFocus, onClose, onMinimize, onDragStart }: { title: string; active: boolean; children: React.ReactNode; onFocus: () => void; onClose: () => void; onMinimize: () => void; onDragStart: (event: React.PointerEvent<HTMLDivElement>) => void }) {
   return (
     <>
-      <div className={cn("flex cursor-grab items-center justify-between border-b px-4 py-3 active:cursor-grabbing", active ? "border-[#9ec8a8]/18 bg-[linear-gradient(180deg,rgba(124,168,139,0.14),rgba(124,168,139,0.06))]" : "border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))]")} onMouseDown={onFocus} onPointerDown={onDragStart}>
+      <div className={cn("flex cursor-grab items-center justify-between border-b px-4 py-3 active:cursor-grabbing", active ? "zen-window-bar-active" : "zen-window-bar-idle")} onMouseDown={onFocus} onPointerDown={onDragStart}>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <button type="button" aria-label={`Close ${title}`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onClose(); }} className="h-2.5 w-2.5 rounded-full bg-[#fe5f57]" />
-            <button type="button" aria-label={`Minimize ${title}`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onMinimize(); }} className="h-2.5 w-2.5 rounded-full bg-[#febb2e]" />
+            <button type="button" aria-label={`Close ${title}`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onClose(); }} className="desktop-window-control h-2.5 w-2.5 rounded-full bg-[#fe5f57]" />
+            <button type="button" aria-label={`Minimize ${title}`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onMinimize(); }} className="desktop-window-control h-2.5 w-2.5 rounded-full bg-[#febb2e]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#2aca44]" />
           </div>
           <div>
@@ -401,66 +440,53 @@ function WindowFrame({ title, active, children, onFocus, onClose, onMinimize, on
 
 function WindowBody({ id, mobile = false }: { id: WindowId; mobile?: boolean }) {
   if (id === "about") return <AboutWindow mobile={mobile} />;
+  if (id === "skills") return <SkillsWindow />;
+  if (id === "experience") return <ExperienceWindow />;
   if (id === "projects") return <ProjectsWindow mobile={mobile} />;
   if (id === "resume") return <ResumeWindow />;
   if (id === "contact") return <ContactWindow />;
-  return <NowWindow />;
+  return null;
 }
 
 function AboutWindow({ mobile = false }: { mobile?: boolean }) {
   return (
     <div className="space-y-5 pr-1">
       <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
-          <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Operating profile</p>
-          <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Grounded in analytics and operations. Moving deeper into systems.</h2>
-          <div className="mt-5 space-y-4">
-            {[siteContent.about.intro, ...siteContent.about.body].map((paragraph) => (
-              <p key={paragraph} className="text-sm leading-8 text-mist sm:text-base">{paragraph}</p>
-            ))}
-          </div>
-        </div>
+        <AboutSummaryCard />
         <div className="min-w-0 space-y-4">
-          {siteContent.about.principles.map((item, index) => (
-            <div key={item} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
-              <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-signal">Principle 0{index + 1}</p>
-              <p className="mt-3 text-base leading-7 text-white">{item}</p>
-            </div>
-          ))}
+          <PrinciplesCards />
         </div>
       </div>
-      <div className={cn("grid gap-4", mobile ? "" : "xl:grid-cols-[1.05fr_0.95fr]")}>
+      {mobile ? (
         <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
-          <p className="font-mono text-xs uppercase tracking-[0.24em] text-signal">Experience</p>
-          <div className="mt-4 space-y-3">
-            {siteContent.experience.map((item) => (
-              <div key={`${item.period}-${item.role}`} className="rounded-[20px] border border-white/8 bg-black/18 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-signal">{item.period}</p>
-                  <p className="text-xs uppercase tracking-[0.18em] text-mist">{item.company}</p>
-                </div>
-                <h3 className="mt-3 text-lg font-medium text-white">{item.role}</h3>
-                <p className="mt-2 text-sm leading-7 text-mist">{item.summary}</p>
-              </div>
-            ))}
-          </div>
+          <p className="font-mono text-xs uppercase tracking-[0.24em] text-signal">Profile notes</p>
+          <p className="mt-3 text-sm leading-7 text-mist">Skills and experience now live in their own dedicated modules so this window stays focused on personal context and working principles.</p>
         </div>
-        <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
-          <p className="font-mono text-xs uppercase tracking-[0.24em] text-signal">Capability map</p>
-          <div className="mt-4 space-y-3">
-            {siteContent.skills.map((group) => (
-              <div key={group.title} className="rounded-[20px] border border-white/8 bg-black/18 p-4">
-                <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mist">{group.title}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {group.items.map((item) => (
-                    <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-slate-100">{item}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SkillsWindow() {
+  return (
+    <div className="space-y-5 pr-1">
+      <div>
+        <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Skills</p>
+        <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Capabilities Map</h2>
       </div>
+      <SkillsContent />
+    </div>
+  );
+}
+
+function ExperienceWindow() {
+  return (
+    <div className="space-y-5 pr-1">
+      <div>
+        <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Experience</p>
+        <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Experience</h2>
+      </div>
+      <ExperienceContent />
     </div>
   );
 }
@@ -535,25 +561,6 @@ function ContactWindow() {
   );
 }
 
-function NowWindow() {
-  return (
-    <div className="space-y-4">
-      <div>
-        <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Now / queue</p>
-        <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Current momentum, shown as live build work.</h2>
-      </div>
-      <div className="grid gap-3">
-        {siteContent.now.map((item, index) => (
-          <div key={item} className="flex gap-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
-            <span className="font-mono text-xs uppercase tracking-[0.24em] text-signal">0{index + 1}</span>
-            <p className="text-sm leading-7 text-mist">{item}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[22px] border border-white/10 bg-black/22 p-4 backdrop-blur-xl">
@@ -565,16 +572,18 @@ function MetricCard({ label, value }: { label: string; value: string }) {
 
 function createInitialWindowLayout(stageSize: StageSize): Record<WindowId, WindowState> {
   const about = createWindowFromConfig("about", stageSize, baseWindowZ + 5, { centered: true });
-  const projects = createWindowFromConfig("projects", stageSize, baseWindowZ + 2, initialWindowOffsets.projects);
-  const resume = createWindowFromConfig("resume", stageSize, baseWindowZ + 1, initialWindowOffsets.resume);
-  const contact = createWindowFromConfig("contact", stageSize, baseWindowZ + 1, initialWindowOffsets.contact);
-  const now = createWindowFromConfig("now", stageSize, baseWindowZ + 1, initialWindowOffsets.now);
+  const skills = createWindowFromConfig("skills", stageSize, baseWindowZ + 3, { centered: true, ...initialWindowOffsets.skills });
+  const experience = createWindowFromConfig("experience", stageSize, baseWindowZ + 2, { centered: true, ...initialWindowOffsets.experience });
+  const projects = createWindowFromConfig("projects", stageSize, baseWindowZ + 2, { centered: true, ...initialWindowOffsets.projects });
+  const resume = createWindowFromConfig("resume", stageSize, baseWindowZ + 1, { centered: true, ...initialWindowOffsets.resume });
+  const contact = createWindowFromConfig("contact", stageSize, baseWindowZ + 1, { centered: true, ...initialWindowOffsets.contact });
   return {
-    about: { ...about, isOpen: true, isMinimized: false, z: baseWindowZ + 5 },
+    about: { ...about, isOpen: false, isMinimized: false, z: baseWindowZ + 5 },
+    skills: { ...skills, isOpen: false, isMinimized: false, z: baseWindowZ + 3 },
+    experience: { ...experience, isOpen: false, isMinimized: false, z: baseWindowZ + 2 },
     projects: { ...projects, isOpen: false, isMinimized: false, z: baseWindowZ + 2 },
     resume: { ...resume, isOpen: false, isMinimized: false, z: baseWindowZ + 1 },
     contact: { ...contact, isOpen: false, isMinimized: false, z: baseWindowZ + 1 },
-    now: { ...now, isOpen: false, isMinimized: false, z: baseWindowZ + 1 },
   };
 }
 
@@ -588,15 +597,15 @@ function createWindowFromConfig(id: WindowId, stageSize: StageSize, z: number, o
   const maxHeight = Math.max(config.minHeight, stageSize.height - dockReserve - stagePadding);
   const width = clamp(config.defaultWidth, config.minWidth, maxWidth);
   const height = clamp(config.defaultHeight, config.minHeight, maxHeight);
-  const positionBounds = getInitialWindowBounds(width, height, stageSize);
+  const positionBounds = options?.centered ? getWindowBounds(width, height, stageSize) : getInitialWindowBounds(width, height, stageSize);
   const centeredX = positionBounds.minX + (positionBounds.maxX - positionBounds.minX) / 2;
   const centeredY = positionBounds.minY + (positionBounds.maxY - positionBounds.minY) / 2;
   return clampWindow(
     {
       isOpen: false,
       isMinimized: false,
-      x: options?.centered ? centeredX : centeredX + (options?.x ?? initialWindowOffsets[id].x),
-      y: options?.centered ? centeredY : centeredY + (options?.y ?? initialWindowOffsets[id].y),
+      x: centeredX + (options?.x ?? (options?.centered ? 0 : initialWindowOffsets[id].x)),
+      y: centeredY + (options?.y ?? (options?.centered ? 0 : initialWindowOffsets[id].y)),
       z,
       width,
       height,
@@ -609,10 +618,11 @@ function createWindowFromConfig(id: WindowId, stageSize: StageSize, z: number, o
 function clampAllWindows(windows: Record<WindowId, WindowState>, stageSize: StageSize): Record<WindowId, WindowState> {
   return {
     about: clampWindow(windows.about, windowConfigs.about, stageSize),
+    skills: clampWindow(windows.skills, windowConfigs.skills, stageSize),
+    experience: clampWindow(windows.experience, windowConfigs.experience, stageSize),
     projects: clampWindow(windows.projects, windowConfigs.projects, stageSize),
     resume: clampWindow(windows.resume, windowConfigs.resume, stageSize),
     contact: clampWindow(windows.contact, windowConfigs.contact, stageSize),
-    now: clampWindow(windows.now, windowConfigs.now, stageSize),
   };
 }
 
@@ -654,4 +664,69 @@ function getInitialWindowBounds(width: number, height: number, stageSize: StageS
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function AboutSummaryCard() {
+  return (
+    <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
+      <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Operating profile</p>
+      <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Grounded in analytics and operations. Moving deeper into systems.</h2>
+      <div className="mt-5 space-y-4">
+        {[siteContent.about.intro, ...siteContent.about.body].map((paragraph) => (
+          <p key={paragraph} className="text-sm leading-8 text-mist sm:text-base">{paragraph}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PrinciplesCards() {
+  return (
+    <>
+      {siteContent.about.principles.map((item, index) => (
+        <div key={item} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
+          <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-signal">Principle 0{index + 1}</p>
+          <p className="mt-3 text-base leading-7 text-white">{item}</p>
+        </div>
+      ))}
+    </>
+  );
+}
+
+function ExperienceContent() {
+  return (
+    <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
+      <div className="space-y-3">
+        {siteContent.experience.map((item) => (
+          <div key={`${item.period}-${item.role}`} className="rounded-[20px] border border-white/8 bg-black/18 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-signal">{item.period}</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-mist">{item.company}</p>
+            </div>
+            <h3 className="mt-3 text-lg font-medium text-white">{item.role}</h3>
+            <p className="mt-2 text-sm leading-7 text-mist">{item.summary}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkillsContent() {
+  return (
+    <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
+      <div className="space-y-3">
+        {siteContent.skills.map((group) => (
+          <div key={group.title} className="rounded-[20px] border border-white/8 bg-black/18 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mist">{group.title}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {group.items.map((item) => (
+                <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-slate-100">{item}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
