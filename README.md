@@ -6,7 +6,7 @@ Instead of a traditional scroll-based site, this project recreates a windowed en
 
 ## 📸 Preview
 
-![Preview](public/preview.png)
+<img src="public/site-preview.png" alt="Preview" width="100%" />
 
 ---
 
