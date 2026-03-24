@@ -108,13 +108,13 @@ tsconfig.json
 Put your PDF here:
 
 ```text
-public/resume/clark-thompson-resume.pdf
+public/resume/Clark-Thompson-Resume.pdf
 ```
 
 That makes the public URL:
 
 ```text
-/resume/clark-thompson-resume.pdf
+/resume/Clark-Thompson-Resume.pdf
 ```
 
 ## Environment Variables

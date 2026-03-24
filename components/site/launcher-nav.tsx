@@ -38,6 +38,8 @@ export function LauncherNav() {
         </nav>
         <a
           href={siteContent.resumePath}
+          target="_blank"
+          rel="noreferrer"
           className="desktop-launcher-pill desktop-launcher-pill-accent rounded-full border px-4 py-2 text-sm text-[#e8efea]"
         >
           Resume

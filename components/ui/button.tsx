@@ -6,6 +6,9 @@ type ButtonProps = {
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "ghost";
   className?: string;
+  target?: React.HTMLAttributeAnchorTarget;
+  rel?: string;
+  download?: boolean | string;
 };
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
@@ -21,20 +24,40 @@ export function Button({
   href,
   children,
   variant = "primary",
-  className
+  className,
+  target,
+  rel,
+  download
 }: ButtonProps) {
   const external = href.startsWith("http") || href.startsWith("mailto:");
+  const resolvedTarget = target ?? (external ? "_blank" : undefined);
+  const resolvedRel = rel ?? (resolvedTarget === "_blank" ? "noreferrer" : undefined);
+  const shouldUseAnchor = !!download || resolvedTarget === "_blank";
+
+  const buttonClassName = cn(
+    "inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium tracking-wide transition duration-200",
+    variants[variant],
+    className
+  );
+
+  if (shouldUseAnchor) {
+    return (
+      <a
+        href={href}
+        target={resolvedTarget}
+        rel={resolvedRel}
+        download={download}
+        className={buttonClassName}
+      >
+        {children}
+      </a>
+    );
+  }
 
   return (
     <Link
       href={href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noreferrer" : undefined}
-      className={cn(
-        "inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium tracking-wide transition duration-200",
-        variants[variant],
-        className
-      )}
+      className={buttonClassName}
     >
       {children}
     </Link>

@@ -1,5 +1,7 @@
+const resumePath = "/resume/Clark-Thompson-Resume.pdf";
+
 export const siteContent = {
-  resumePath: "/resume/clark-thompson-resume.pdf",
+  resumePath,
   hero: {
     name: "Clark Thompson",
     eyebrow: "System Profile",
@@ -13,7 +15,7 @@ export const siteContent = {
       { label: "Open Projects", href: "#projects", variant: "primary" as const },
       {
         label: "View Resume",
-        href: "/resume/clark-thompson-resume.pdf",
+        href: resumePath,
         variant: "secondary" as const
       },
       { label: "Contact", href: "#contact", variant: "ghost" as const }

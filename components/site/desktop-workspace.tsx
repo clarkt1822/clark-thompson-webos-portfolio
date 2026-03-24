@@ -614,8 +614,8 @@ function ResumeWindow() {
         <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Straightforward handoff for recruiters and hiring managers.</h2>
         <p className="mt-4 text-sm leading-8 text-mist sm:text-base">Keep this window simple. Open the PDF when you need it, or download it directly.</p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Button href={siteContent.resumePath} variant="primary">Open Resume</Button>
-          <Button href={siteContent.resumePath} variant="secondary">Download PDF</Button>
+          <Button href={siteContent.resumePath} variant="primary" target="_blank" rel="noreferrer">Open Resume</Button>
+          <Button href={siteContent.resumePath} variant="secondary" download>Download PDF</Button>
         </div>
       </div>
     </div>
