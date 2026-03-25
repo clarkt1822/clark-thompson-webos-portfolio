@@ -73,21 +73,21 @@ export const siteContent = {
     },
     {
       title: "Stock Trend Scanner",
-      summary: "Python-based scanner for surfacing ranked stock setups through a structured operational workflow.",
+      summary: "Web-first stock scanning system evolved from an earlier Python desktop tool, focused on structured scan logic, ranked outputs, and repeatable workflows.",
       problem:
-        "Built a desktop scanning tool for identifying market setups through repeatable scan logic, ranked outputs, and an interactive interface.",
+        "Running repeatable market scans and reviewing results was tied to a local desktop workflow, limiting flexibility, iteration speed, and the ability to extend or surface outputs beyond a single environment.",
       built:
-        "Focused on combining data processing with an operational GUI for reviewing scan results and exporting outputs.",
+        "Refactored an existing Python desktop scanner into a modular system with a backend API and web-based interface, preserving core scan logic while improving how scans are executed, reviewed, and extended.",
       description:
-        "Built a desktop scanning tool for identifying market setups through repeatable scan logic, ranked outputs, and an interactive interface. Focused on combining data processing with an operational GUI for reviewing scan results and exporting outputs.",
+         "Re-architected a desktop-based scanning tool into a backend-driven system with clearer separation between scan logic, execution, and presentation, making the workflow easier to maintain and evolve.",
       highlights: [
         "Built a desktop GUI for running scans and reviewing ranked outputs",
         "Structured workflows around universe selection, scan modes, and repeatable execution",
         "Combined data processing, filtering, and export functionality",
         "Focused on usability alongside market analysis workflows"
       ],
-      stack: ["Python", "PySide6", "pandas", "numpy", "yfinance"],
-      techLine: "Python, PySide6, pandas, numpy, yfinance",
+      stack: ["Python", "FastAPI", "TypeScript", "Next.js", "pandas", "numpy", "yfinance"],
+      techLine: "Python, FastAPI, TypeScript, Next.js, pandas, numpy, yfinance",
       impact:
         "Combines operational workflow design with data processing and a usable desktop interface.",
       links: {
