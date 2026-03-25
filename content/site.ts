@@ -43,88 +43,123 @@ export const siteContent = {
   projects: [
     {
       title: "RAG Knowledge Assistant",
-      summary: "Internal search and answer layer for messy docs, SOPs, and operational context.",
+      summary: "AI-powered system for querying structured knowledge using retrieval-augmented generation.",
       problem:
-        "Teams lose time hunting through fragmented documents, repeat the same questions, and make decisions with incomplete context.",
+        "Built a low-cost RAG pipeline to retrieve and generate context-aware responses over structured data.",
       built:
-        "Built a retrieval pipeline with chunking, embeddings, structured metadata, citation-aware responses, and a focused interface for quick operational lookup.",
-      stack: ["Next.js", "TypeScript", "Python", "OpenAI API", "Vector store"],
+        "Designed the system using OpenAI and Supabase pgvector to enable semantic search and efficient document retrieval.",
+      description:
+        "Built a low-cost RAG pipeline to retrieve and generate context-aware responses over structured data. Designed the system using OpenAI and Supabase pgvector to enable semantic search and efficient document retrieval.",
+      highlights: [
+        "Implemented vector-based retrieval using Supabase pgvector",
+        "Built full query pipeline with context injection and response generation",
+        "Designed for low-cost, scalable deployment",
+        "Focused on practical internal knowledge use cases"
+      ],
+      stack: ["TypeScript", "Next.js", "OpenAI API", "Supabase", "pgvector"],
+      techLine: "TypeScript, Next.js, OpenAI API, Supabase, pgvector",
       impact:
-        "Shows how I think about AI as workflow infrastructure, not novelty. The value is faster answers, better context, and fewer repeated interruptions.",
+        "Focused on practical internal knowledge use cases and scalable deployment for grounded retrieval workflows.",
       links: {
-        github: "#",
+        github: "https://github.com/clarkt1822/rag-knowledge-assistant",
         demo: "#",
         caseStudy: "#"
+      },
+      primaryLink: {
+        label: "GitHub",
+        href: "https://github.com/clarkt1822/rag-knowledge-assistant"
       },
       accent: "signal" as const
     },
     {
-      title: "AI Workflow Automation System",
-      summary: "Automation layer for repeatable intake, triage, enrichment, and follow-up work.",
+      title: "Stock Trend Scanner",
+      summary: "Python-based scanner for surfacing ranked stock setups through a structured operational workflow.",
       problem:
-        "A lot of team time disappears into predictable manual steps across forms, spreadsheets, CRM updates, and status handoffs.",
+        "Built a desktop scanning tool for identifying market setups through repeatable scan logic, ranked outputs, and an interactive interface.",
       built:
-        "Designed a workflow that combines validation, enrichment, conditional routing, and AI-assisted drafting so repetitive process work moves faster with human review where it matters.",
-      stack: ["Node.js", "TypeScript", "n8n", "Postgres", "Webhooks"],
+        "Focused on combining data processing with an operational GUI for reviewing scan results and exporting outputs.",
+      description:
+        "Built a desktop scanning tool for identifying market setups through repeatable scan logic, ranked outputs, and an interactive interface. Focused on combining data processing with an operational GUI for reviewing scan results and exporting outputs.",
+      highlights: [
+        "Built a desktop GUI for running scans and reviewing ranked outputs",
+        "Structured workflows around universe selection, scan modes, and repeatable execution",
+        "Combined data processing, filtering, and export functionality",
+        "Focused on usability alongside market analysis workflows"
+      ],
+      stack: ["Python", "PySide6", "pandas", "numpy", "yfinance"],
+      techLine: "Python, PySide6, pandas, numpy, yfinance",
       impact:
-        "Positions me well for operations-heavy technical roles because it ties software, automation, and business process thinking together.",
+        "Combines operational workflow design with data processing and a usable desktop interface.",
+      links: {
+        github: "https://github.com/clarkt1822/stock-trend-scanner-portfolio-v3-",
+        demo: "#",
+        caseStudy: "#"
+      },
+      primaryLink: {
+        label: "GitHub",
+        href: "https://github.com/clarkt1822/stock-trend-scanner-portfolio-v3-"
+      },
+      accent: "glow" as const
+    },
+    {
+      title: "SimWorld League Operations System",
+      summary: "Supported and improved an internal operations system used to manage league workflows, scheduling, and simulation support.",
+      problem:
+        "Worked within an existing internal system used to support league operations, scheduling logic, and simulation workflows across an 84-team environment.",
+      built:
+        "Contributed to system upkeep, operational improvements, and backend process support in a logic-heavy no-code environment.",
+      description:
+        "Worked within an existing internal system used to support league operations, scheduling logic, and simulation workflows across an 84-team environment. Contributed to system upkeep, operational improvements, and backend process support in a logic-heavy no-code environment.",
+      highlights: [
+        "Helped maintain and improve a system managing teams, rosters, scheduling, and simulation workflows",
+        "Supported updates to scheduling logic, operational flows, and backend coordination",
+        "Worked with structured, relational league data inside a no-code environment",
+        "Contributed to real-time operational support across daily simulation workflows"
+      ],
+      stack: ["Google Sheets", "Workflow Logic", "Operations Support", "Data Structuring", "No-Code Systems"],
+      techLine: "Google Sheets, Workflow Logic, Operations Support, Data Structuring, No-Code Systems",
+      impact:
+        "Experience centered on support, improvement, and coordination inside a live operational system rather than greenfield ownership.",
       links: {
         github: "#",
         demo: "#",
         caseStudy: "#"
       },
-      accent: "glow" as const
-    },
-    {
-      title: "KPI Analytics Dashboard",
-      summary: "Decision-focused dashboard for revenue, pipeline, and operating metrics.",
-      problem:
-        "Leaders often get reporting that is technically correct but hard to interpret, delayed, or disconnected from action.",
-      built:
-        "Built a dashboard layer with cleaned metrics, trend views, drill-downs, and narrative framing so the output is usable in weekly operating conversations.",
-      stack: ["SQL", "Power BI", "dbt", "Excel", "Stakeholder discovery"],
-      impact:
-        "Grounds the portfolio in real analytics experience and shows that I know how to translate data into decisions, not just charts.",
-      links: {
-        github: "#",
-        demo: "#",
-        caseStudy: "#"
+      primaryLink: {
+        label: "Internal system",
+        href: "#"
       },
       accent: "ember" as const
     },
     {
-      title: "Document Classification Pipeline",
-      summary: "Practical intake pipeline for sorting, labeling, and routing semi-structured documents.",
+      title: "CT/OS — Portfolio System",
+      summary: "System-style portfolio exploring interaction patterns beyond traditional web layouts.",
       problem:
-        "Document-heavy workflows create bottlenecks when teams rely on manual sorting, inconsistent labels, and inbox triage.",
+        "Designed and built a desktop-inspired interface to present work through a multi-window system.",
       built:
-        "Created a lightweight pipeline for extraction, classification, confidence scoring, and exception handling with a review loop instead of pretending the model is always right.",
-      stack: ["Python", "FastAPI", "OCR tooling", "LLM prompts", "Postgres"],
+        "Focused on layout behavior, state management, and interaction quality using modern frontend tools.",
+      description:
+        "Designed and built a desktop-inspired interface to present work through a multi-window system. Focused on layout behavior, state management, and interaction quality using modern frontend tools.",
+      highlights: [
+        "Implemented window system with open, focus, minimize, and drag behavior",
+        "Built shared content architecture across components",
+        "Designed interaction patterns and motion behavior",
+        "Prioritized system feel over static layouts"
+      ],
+      stack: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+      techLine: "Next.js, React, TypeScript, Tailwind CSS",
       impact:
-        "Shows a grounded approach to AI implementation: narrow scope, measurable usefulness, and explicit handling for uncertainty.",
+        "Demonstrates frontend systems thinking through interaction design, UI state, and shared content architecture.",
       links: {
-        github: "#",
+        github: "https://github.com/clarkt1822/clark-thompson-webos-portfolio",
         demo: "#",
         caseStudy: "#"
+      },
+      primaryLink: {
+        label: "GitHub",
+        href: "https://github.com/clarkt1822/clark-thompson-webos-portfolio"
       },
       accent: "signal" as const
-    },
-    {
-      title: "Agentic Workflow Experiment",
-      summary: "Small-scale agent workflow exploring task decomposition after solid retrieval foundations.",
-      problem:
-        "Agentic systems are easy to oversell and easy to make brittle when the task design is vague.",
-      built:
-        "Tested a constrained workflow where a planning agent delegates bounded tasks, checks outputs against rules, and returns structured summaries instead of pretending to be fully autonomous.",
-      stack: ["TypeScript", "LLM orchestration", "Tool calling", "Evaluation logs"],
-      impact:
-        "Communicates curiosity and forward motion while still showing judgment about where agents are actually useful.",
-      links: {
-        github: "#",
-        demo: "#",
-        caseStudy: "#"
-      },
-      accent: "glow" as const
     }
   ],
   experience: [
@@ -152,28 +187,70 @@ export const siteContent = {
   ],
   skills: [
     {
-      title: "AI / LLM",
-      items: ["RAG pipelines", "Prompt design", "Evaluation thinking", "Tool calling", "Applied AI UX"]
+      title: "AI / LLM Systems",
+      items: [
+        "RAG pipelines",
+        "Agentic workflows",
+        "Prompt & context engineering",
+        "Tool calling / function calling",
+        "LLM evaluation & iteration",
+        "Structured outputs",
+        "Applied AI UX"
+      ]
     },
     {
-      title: "Data",
-      items: ["SQL", "Analytics design", "Data modeling", "KPI reporting", "Business analysis"]
+      title: "Data Systems",
+      items: [
+        "SQL",
+        "Data modeling",
+        "ETL pipeline design",
+        "KPI architecture",
+        "Analytics design",
+        "Data validation & QA",
+        "Business analysis"
+      ]
     },
     {
-      title: "Automation",
-      items: ["Workflow design", "Webhook orchestration", "System handoffs", "n8n", "Operational tooling"]
+      title: "Automation & Integrations",
+      items: [
+        "Workflow design",
+        "API integrations (REST)",
+        "Webhooks",
+        "n8n / Make",
+        "System orchestration",
+        "Operational tooling"
+      ]
     },
     {
-      title: "Backend / App",
-      items: ["Next.js", "TypeScript", "Python", "API design", "Postgres"]
+      title: "Backend / Engineering",
+      items: [
+        "Python",
+        "TypeScript",
+        "API design",
+        "Postgres / Supabase",
+        "Next.js",
+        "Logging & monitoring"
+      ]
     },
     {
-      title: "BI / Visualization",
-      items: ["Power BI", "Dashboard storytelling", "Decision support", "Metric framing"]
+      title: "Analytics & Decision Support",
+      items: [
+        "Power BI / Tableau",
+        "Dashboard storytelling",
+        "Forecasting",
+        "Metric framing",
+        "Decision systems"
+      ]
     },
     {
-      title: "Platforms / Tools",
-      items: ["GitHub", "Vercel", "Supabase", "Excel", "Documentation systems"]
+      title: "Systems & Architecture",
+      items: [
+        "End-to-end system design",
+        "Integration architecture",
+        "Scalable solution design",
+        "Debugging complex systems",
+        "Translating business -> technical"
+      ]
     }
   ],
   contact: {

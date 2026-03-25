@@ -13,15 +13,12 @@ export function ContactPanel() {
           <h2 className="mt-4 max-w-xl text-3xl font-semibold tracking-tight text-white md:text-4xl">
             Let&apos;s talk if the work sits somewhere between data, software, automation, and AI.
           </h2>
-          <p className="mt-4 max-w-2xl text-base leading-8 text-mist">
-            {siteContent.contact.prompt}
-          </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {siteContent.contact.links.map((link, index) => (
+            {siteContent.contact.links.map((link) => (
               <Button
                 key={link.label}
                 href={link.href}
-                variant={index === 2 ? "primary" : "secondary"}
+                variant="primary"
               >
                 {link.label}
               </Button>

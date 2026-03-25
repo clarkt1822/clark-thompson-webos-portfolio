@@ -7,7 +7,6 @@ export default function HomePage() {
     <AppShell>
       <div className="space-y-5 md:h-full">
         <DesktopWorkspace />
-        <FooterNote />
       </div>
     </AppShell>
   );

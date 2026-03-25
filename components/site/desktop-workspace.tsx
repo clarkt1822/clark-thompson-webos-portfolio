@@ -46,9 +46,9 @@ const dockLayerZ = 50;
 
 const windowConfigs: Record<WindowId, WindowConfig> = {
   about: { id: "about", title: "About", shortLabel: "ABT", tone: "bg-white/8 text-white", defaultWidth: 760, defaultHeight: 580, minWidth: 560, minHeight: 360 },
-  skills: { id: "skills", title: "Skills", shortLabel: "SKL", tone: "bg-[#7f9fb1]/16 text-[#dfeaf0]", defaultWidth: 620, defaultHeight: 520, minWidth: 480, minHeight: 320 },
+  skills: { id: "skills", title: "Skills", shortLabel: "SKL", tone: "bg-[#7f9fb1]/16 text-[#dfeaf0]", defaultWidth: 760, defaultHeight: 620, minWidth: 480, minHeight: 320 },
   experience: { id: "experience", title: "Experience", shortLabel: "EXP", tone: "bg-[#8da58c]/16 text-[#e3ece2]", defaultWidth: 640, defaultHeight: 520, minWidth: 500, minHeight: 320 },
-  projects: { id: "projects", title: "Projects", shortLabel: "PRJ", tone: "bg-[#7ca88b]/16 text-[#dce9df]", defaultWidth: 720, defaultHeight: 540, minWidth: 520, minHeight: 340 },
+  projects: { id: "projects", title: "Selected Work", shortLabel: "PRJ", tone: "bg-[#7ca88b]/16 text-[#dce9df]", defaultWidth: 720, defaultHeight: 540, minWidth: 520, minHeight: 340 },
   resume: { id: "resume", title: "Resume", shortLabel: "PDF", tone: "bg-[#9ab4a1]/16 text-[#edf3ef]", defaultWidth: 470, defaultHeight: 300, minWidth: 400, minHeight: 240 },
   contact: { id: "contact", title: "Contact", shortLabel: "COM", tone: "bg-[#8aa592]/16 text-[#e3ede6]", defaultWidth: 500, defaultHeight: 420, minWidth: 400, minHeight: 280 },
 };
@@ -289,7 +289,7 @@ export function DesktopWorkspace() {
                 <Tag className="px-2.5 py-0.5 text-[11px] tracking-[0.2em] text-mist/80">{siteContent.hero.eyebrow}</Tag>
                 <div className="mt-5 space-y-5">
                   <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">{siteContent.hero.name}</p>
-                  <h1 className="text-[2rem] font-semibold leading-[1.16] text-white">Grounded in analytics and operations. Expanding into software and AI systems.</h1>
+                  <h1 className="text-[2rem] font-semibold leading-[1.16] text-white">Grounded in analytics and operations. Moving deeper into software and AI systems.</h1>
                   <p className="text-[15px] leading-8 text-white/72">{siteContent.hero.subheadline}</p>
                 </div>
               </motion.div>
@@ -578,27 +578,52 @@ function ExperienceWindow() {
 function ProjectsWindow({ mobile = false }: { mobile?: boolean }) {
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="space-y-3">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Work directory</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Practical work with clear technical and workflow value.</h2>
+          <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Selected Work</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Selected Work</h2>
         </div>
-        <p className="max-w-md text-sm leading-7 text-mist">Replace these placeholders with real screenshots and links later. The structure is already set up to read like shipped work, not course exercises.</p>
+        <p className="max-w-3xl text-sm leading-7 text-mist">
+          Selected work focused on building and supporting data-driven systems, automation workflows, and applied AI tools.
+        </p>
+        <p className="max-w-3xl text-sm leading-7 text-mist">
+          Ranging from internal operational systems to full-stack AI applications, these projects reflect a focus on solving real problems with practical, scalable solutions.
+        </p>
       </div>
       <div className={cn("grid gap-4", mobile ? "" : "xl:grid-cols-2")}>
         {siteContent.projects.map((project, index) => (
           <article key={project.title} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
             <div className="flex items-center justify-between gap-3">
               <Tag>0{index + 1}</Tag>
-              <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">{project.stack.slice(0, 3).join(" / ")}</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">Selected project</span>
             </div>
             <h3 className="mt-4 text-xl font-medium text-white">{project.title}</h3>
             <p className="mt-2 text-sm leading-7 text-slate-200">{project.summary}</p>
+            <p className="mt-4 text-sm leading-7 text-mist">{project.description}</p>
+            <ul className="mt-4 space-y-2 text-sm leading-6 text-mist">
+              {project.highlights.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span aria-hidden className="mt-2 h-1.5 w-1.5 rounded-full bg-[#9ec8a8]" />
+                  <span className="flex-1">{item}</span>
+                </li>
+              ))}
+            </ul>
             <div className="mt-4 rounded-[20px] border border-white/8 bg-black/18 p-4">
-              <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">What I built</p>
-              <p className="mt-2 text-sm leading-7 text-mist">{project.built}</p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">Tech stack</p>
+              <p className="mt-2 text-sm leading-7 text-mist">{project.techLine}</p>
             </div>
-            <p className="mt-4 text-sm leading-7 text-mist">{project.impact}</p>
+            {project.primaryLink.href !== "#" ? (
+              <div className="mt-4">
+                <a
+                  href={project.primaryLink.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex rounded-full border border-white/10 px-4 py-2 text-sm text-mist transition hover:border-white/20 hover:text-white"
+                >
+                  {project.primaryLink.label}
+                </a>
+              </div>
+            ) : null}
           </article>
         ))}
       </div>
@@ -612,7 +637,7 @@ function ResumeWindow() {
       <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
         <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Resume</p>
         <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Straightforward handoff for recruiters and hiring managers.</h2>
-        <p className="mt-4 text-sm leading-8 text-mist sm:text-base">Keep this window simple. Open the PDF when you need it, or download it directly.</p>
+        <p className="mt-4 text-sm leading-8 text-mist sm:text-base"> Open the PDF when you need it, or download it directly.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button href={siteContent.resumePath} variant="primary" target="_blank" rel="noreferrer">Open Resume</Button>
           <Button href={siteContent.resumePath} variant="secondary" download>Download PDF</Button>
@@ -628,7 +653,6 @@ function ContactWindow() {
       <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
         <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Access channel</p>
         <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Open to good conversations around data, software, automation, and AI work.</h2>
-        <p className="mt-4 text-sm leading-8 text-mist sm:text-base">{siteContent.contact.prompt}</p>
       </div>
       <div className="grid gap-4">
         {siteContent.contact.links.map((link, index) => (
@@ -636,7 +660,7 @@ function ContactWindow() {
             <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-mist">Channel 0{index + 1}</p>
             <h3 className="mt-3 text-lg font-medium text-white">{link.label}</h3>
             <div className="mt-4">
-              <Button href={link.href} variant={index <= 1 ? "primary" : "secondary"}>Open {link.label}</Button>
+              <Button href={link.href} variant="primary">Open {link.label}</Button>
             </div>
           </div>
         ))}
@@ -754,7 +778,7 @@ function AboutSummaryCard() {
   return (
     <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
       <p className="font-mono text-xs uppercase tracking-[0.28em] text-signal">Operating profile</p>
-      <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Grounded in analytics and operations. Moving deeper into systems.</h2>
+      <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Grounded in analytics and operations. Moving deeper into software and AI systems.</h2>
       <div className="mt-5 space-y-4">
         {[siteContent.about.intro, ...siteContent.about.body].map((paragraph) => (
           <p key={paragraph} className="text-sm leading-8 text-mist sm:text-base">{paragraph}</p>
@@ -806,19 +830,40 @@ function ExperienceContent() {
 }
 
 function SkillsContent() {
+  const primaryGroups = siteContent.skills.slice(0, -1);
+  const systemsGroup = siteContent.skills.at(-1);
+
   return (
     <div className="min-w-0 rounded-[24px] border border-white/8 bg-white/[0.03] p-5">
-      <div className="space-y-3">
-        {siteContent.skills.map((group) => (
-          <div key={group.title} className="rounded-[20px] border border-white/8 bg-black/18 p-4">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mist">{group.title}</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {group.items.map((item) => (
-                <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-slate-100">{item}</span>
+      <div className="space-y-4">
+        <div className="grid gap-3 xl:grid-cols-2">
+          {primaryGroups.map((group) => (
+            <section key={group.title} className="rounded-[20px] border border-white/8 bg-black/18 p-4">
+              <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mist">{group.title}</p>
+              <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-100">
+                {group.items.map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span aria-hidden className="mt-2 h-1.5 w-1.5 rounded-full bg-[#9ec8a8]" />
+                    <span className="flex-1">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+        {systemsGroup ? (
+          <section className="rounded-[20px] border border-white/8 bg-white/[0.04] p-5">
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-signal">{systemsGroup.title}</p>
+            <ul className="mt-4 grid gap-x-6 gap-y-2 text-sm leading-6 text-slate-100 sm:grid-cols-2">
+              {systemsGroup.items.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span aria-hidden className="mt-2 h-1.5 w-1.5 rounded-full bg-[#9ec8a8]" />
+                  <span className="flex-1">{item}</span>
+                </li>
               ))}
-            </div>
-          </div>
-        ))}
+            </ul>
+          </section>
+        ) : null}
       </div>
     </div>
   );
