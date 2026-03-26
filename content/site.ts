@@ -227,7 +227,8 @@ export const siteContent = {
         "Python",
         "TypeScript",
         "API design",
-        "Postgres / Supabase",
+        "Postgres / SQL",
+        "MongoDB",
         "Next.js",
         "Logging & monitoring"
       ]
