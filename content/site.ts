@@ -195,7 +195,8 @@ export const siteContent = {
         "Tool calling / function calling",
         "LLM evaluation & iteration",
         "Structured outputs",
-        "Applied AI UX"
+        "Applied AI UX",
+        "Semantic search & embeddings"
       ]
     },
     {
@@ -207,7 +208,7 @@ export const siteContent = {
         "KPI architecture",
         "Analytics design",
         "Data validation & QA",
-        "Business analysis"
+        "Forecasting"
       ]
     },
     {
@@ -218,7 +219,7 @@ export const siteContent = {
         "Webhooks",
         "n8n / Make",
         "System orchestration",
-        "Operational tooling"
+        "Cloud deployments (Vercel)"
       ]
     },
     {
@@ -237,7 +238,7 @@ export const siteContent = {
       title: "Analytics & Decision Support",
       items: [
         "Power BI / Tableau",
-        "Dashboard storytelling",
+        "Dashboard design",
         "Forecasting",
         "Metric framing",
         "Decision systems"
@@ -248,7 +249,7 @@ export const siteContent = {
       items: [
         "End-to-end system design",
         "Integration architecture",
-        "Scalable solution design",
+        "Scalable architecture",
         "Debugging complex systems",
         "Translating business -> technical"
       ]
