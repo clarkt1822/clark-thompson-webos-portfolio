@@ -223,6 +223,18 @@ export const siteContent = {
       ]
     },
     {
+      title: "Business Execution",
+      items: [
+        "Translating business problems into AI systems",
+        "Technical discovery (data, workflows, integrations)",
+        "Solution architecture for real-world use cases",
+        "AI workflow design tied to business outcomes",
+        "Rapid prototyping -> production iteration",
+        "Working directly with ops/sales teams to deploy usable systems",
+        "System debugging in live environments"
+      ]
+    },
+    {
       title: "Backend / Engineering",
       items: [
         "Python",
