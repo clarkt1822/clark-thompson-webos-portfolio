@@ -4,6 +4,8 @@ An interactive portfolio built to feel like a desktop operating system.
 
 Instead of a traditional scroll-based site, this project recreates a windowed environment where users can open, move, and interact with different sections — just like an OS.
 
+Last updated: April 6, 2026 — Added Business Execution section
+
 ## 📸 Preview
 
 <img src="public/site-preview.png" alt="Preview" width="100%" />
