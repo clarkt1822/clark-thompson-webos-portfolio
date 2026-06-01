@@ -74,9 +74,20 @@ const initialWindowOffsets: Record<WindowId, { x: number; y: number }> = {
 
 const experienceEntries: readonly ExperienceEntry[] = [
   {
+  role: "Functional Analyst",
+  company: "University of Alabama at Birmingham",
+  period: "May 2026 - Present",
+  bullets: [
+    "Develop and maintain ServiceNow catalog items, workflows, and operational processes supporting internal university departments.",
+    "Configure and optimize workflow automation within ServiceNow to improve request handling and operational efficiency.",
+    "Write and modify JavaScript/Python-based scripts supporting platform functionality, automation, and process improvements.",
+    "Collaborate with stakeholders to troubleshoot system issues, improve workflows, and support internal IT service operations."
+  ]
+},
+  {
     role: "AI Consultant (Contract)",
     company: "AutomateNexus",
-    period: "Feb 2026 - Present",
+    period: "Jan 2026 - April 2026",
     bullets: [
       "Partner with SMB operators to analyze workflows, identify bottlenecks, and design practical AI-driven automation systems that reduce manual work and improve operational efficiency.",
       "Lead discovery conversations to translate business processes into clear technical requirements, prioritizing automation initiatives based on ROI and execution feasibility.",

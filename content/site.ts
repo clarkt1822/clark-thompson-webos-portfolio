@@ -215,6 +215,7 @@ export const siteContent = {
       title: "Automation & Integrations",
       items: [
         "Workflow design",
+        "Service Catalog Development",
         "API integrations (REST)",
         "Webhooks",
         "n8n / Make",
@@ -231,7 +232,8 @@ export const siteContent = {
         "AI workflow design tied to business outcomes",
         "Rapid prototyping -> production iteration",
         "Working directly with ops/sales teams to deploy usable systems",
-        "System debugging in live environments"
+        "System debugging in live environments",
+        " IT Service Management (ITSM)"
       ]
     },
     {
@@ -253,7 +255,7 @@ export const siteContent = {
         "Dashboard design",
         "Forecasting",
         "Metric framing",
-        "Decision systems"
+        "Decision systems",
       ]
     },
     {
@@ -263,7 +265,8 @@ export const siteContent = {
         "Integration architecture",
         "Scalable architecture",
         "Debugging complex systems",
-        "Translating business -> technical"
+        "Translating business -> technical",
+        "Enterprise Systems Support"
       ]
     }
   ],
