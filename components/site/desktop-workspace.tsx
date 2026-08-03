@@ -78,10 +78,10 @@ const experienceEntries: readonly ExperienceEntry[] = [
   company: "University of Alabama at Birmingham",
   period: "May 2026 - Present",
   bullets: [
-    "Develop and maintain ServiceNow catalog items, workflows, and operational processes supporting internal university departments.",
-    "Configure and optimize workflow automation within ServiceNow to improve request handling and operational efficiency.",
-    "Write and modify JavaScript/Python-based scripts supporting platform functionality, automation, and process improvements.",
-    "Collaborate with stakeholders to troubleshoot system issues, improve workflows, and support internal IT service operations."
+    "Built a Python ETL pipeline running as a scheduled job that syncs ServiceNow records into a SQL database and loads them into PCR360, the university's telecom billing platform replacing manual data entry and keeping billing data consistent across systems.",
+    "Developed operational reporting and dashboards in ServiceNow giving stakeholders visibility into request volume, turning raw ticket data into decision-ready views.",
+    "Design and maintain ServiceNow catalog items, workflows, and approval processes for internal departments, using JavaScript business rules and client scripts to automate request handling.",
+    "Partner with stakeholders to troubleshoot system issues and improve workflows, reducing manual effort and turnaround time across IT service operations."
   ]
 },
   {
