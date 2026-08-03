@@ -42,7 +42,7 @@ export const siteContent = {
   },
   projects: [
     {
-      title: "Quorvex Bio — Custom E-Commerce Theme",
+      title: "Custom E-Commerce Site - Client Project",
       summary: "Custom WordPress + WooCommerce theme built from scratch for a B2B research-compound supplier, with a compliance-first storefront, age-gated access, and structured product documentation.",
       problem:
         "A research-compound supplier needed a credible, premium storefront — not a generic template — with age-gated access, research-use-only positioning, and clear product documentation built into the buying experience.",
