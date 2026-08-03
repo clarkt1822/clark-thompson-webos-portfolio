@@ -62,7 +62,7 @@ export const siteContent = {
       impact:
         "Delivered a production client storefront that pairs premium brand presentation with regulatory-conscious UX — age-gating, compliance pages, and structured documentation built into the purchase flow.",
       links: {
-        github: "#",
+        github: "https://github.com/clarkt1822/quorvex",
         demo: "https://quorvexbio.com",
         caseStudy: "#"
       },
