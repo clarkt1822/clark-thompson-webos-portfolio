@@ -42,6 +42,37 @@ export const siteContent = {
   },
   projects: [
     {
+      title: "Quorvex Bio — Custom E-Commerce Theme",
+      summary: "Custom WordPress + WooCommerce theme built from scratch for a B2B research-compound supplier, with a compliance-first storefront, age-gated access, and structured product documentation.",
+      problem:
+        "A research-compound supplier needed a credible, premium storefront — not a generic template — with age-gated access, research-use-only positioning, and clear product documentation built into the buying experience.",
+      built:
+        "Built a fully custom WooCommerce theme from the ground up: hand-authored PHP templates, ACF flexible-content layouts for editable pages, a custom age-gate module, custom post types/taxonomies, and an SCSS-authored design system.",
+      description:
+        "Designed and developed a bespoke WordPress + WooCommerce theme for a research-compound brand, balancing a premium science-oriented aesthetic with regulatory-conscious UX. No page builder — every template, layout, and compliance flow was custom-built.",
+      highlights: [
+        "Built a fully custom WooCommerce theme with hand-authored PHP templates and an SCSS design system (no page builder)",
+        "Implemented a custom age-gate and research-use-only compliance flows across the storefront",
+        "Used Advanced Custom Fields (ACF) flexible layouts so pages stay editable without touching code",
+        "Registered custom post types and taxonomies to structure products and research documentation",
+        "Focused on performance, mobile responsiveness, and a trustworthy, professional brand presentation"
+      ],
+      stack: ["WordPress", "WooCommerce", "PHP", "ACF", "SCSS/Sass", "JavaScript"],
+      techLine: "WordPress, WooCommerce, PHP, ACF, SCSS, JavaScript",
+      impact:
+        "Delivered a production client storefront that pairs premium brand presentation with regulatory-conscious UX — age-gating, compliance pages, and structured documentation built into the purchase flow.",
+      links: {
+        github: "#",
+        demo: "https://quorvexbio.com",
+        caseStudy: "#"
+      },
+      primaryLink: {
+        label: "Live Site",
+        href: "https://quorvexbio.com"
+      },
+      accent: "ember" as const
+    },
+    {
       title: "RAG Knowledge Assistant",
       summary: "AI-powered system for querying structured knowledge using retrieval-augmented generation.",
       problem:
